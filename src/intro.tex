@@ -1,0 +1,83 @@
+\chapter{Introduction}
+
+This text is a guide to get started with the GLib/GTK+ development platform, with the C language. It is sometimes assumed that the reader uses a Unix-like system.
+
+Some sections come from the book \emph{GTK+/Gnome Application Development}, by Havoc Pennington, written in 1999, edited by the New Riders Publishing, and licensed under the Open Publication License. The latest version of the Open Publication License can be found at:\\
+\url{http://www.opencontent.org/openpub/}
+
+\section{Prerequisites}
+
+Here is a non-exhaustive list of prerequisites, assuming that you can read English, otherwise you can use this text for other purposes, like blocking a door, elevating (slightly) a projector, light a fire, …
+
+\begin{itemize}
+  \item This text supposes that you already know the C language. The reference book is \emph{The C Programming Language}, by Brian Kernighan and Dennis Ritchie \cite{k-r-book}.
+  \item Object-oriented programming (OOP) is also required. You should be familiar with concepts like inheritance, an interface, a virtual method or polymorphism.
+  \item Having read a book on data structures and algorithms is useful, but you can learn that in parallel.
+  \item If you want to develop your application on a Unix-like system, another prerequisite is to know how Unix works: the command line, a bit of shell scripting and how to write a Makefile. A possible book is \emph{UNIX for the Impatient}, by Paul Abrahams \cite{unix-impatient}.
+  \item Not strictly required, but highly recommended is to use a version control system like Git. A good book is \emph{Pro Git}, by Scott Chacon \cite{pro-git}.
+\end{itemize}
+ 
+\section{Why and when using the C language?}
+
+The GLib and GTK+ libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject, the GLib object system. For example Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}} is a new programming language based on GObject. JavaScript and Python are also supported, among other languages. So why and when choosing the C language? To answer this question, let's first look at how to structure an application codebase.
+
+\subsection{Separate the backend from the frontend}
+% Adapted from a FAQ question in GGAD.
+A good practice is to separate the graphical user interface (GUI) from the rest of the application. For a variety of reasons, an application's graphical interface tends to be an exceptionally volatile and ever-changing piece of software. It's the focus of most user requests for change. It is difficult to plan and execute well the first time around -- often you will discover that some aspect of it is unpleasant to use only after you have written it. Having several different user interfaces is sometimes desirable, for example a command-line version, or a web-based interface.
+
+In practical terms, this means that any large application should have a radical separation between its various \emph{frontends}, or interfaces, and the \emph{backend}. The backend should contain all the ``hard parts'': your algorithms and data structures, the real work done by the application. Think of it as an abstract ``model'' being displayed to and manipulated by the user.
+
+Each frontend should be a ``view'' and a ``controller.'' As a ``view,'' the frontend must note any changes in the backend, and change the display accordingly. As a ``controller,'' the frontend must allow the user to relay requests for change to the backend (it defines how manipulations of the frontend translate into changes in the model).
+
+There are many ways to discipline yourself to keep your application separated. A couple of useful ideas:
+\begin{itemize}
+  \item Write the backend as a library. At the beginning the library can be internal to the application and statically linked, without API/ABI stability guarantees. When the project grows up, and if the code is useful for other programs, you can turn easily your backend into a real library.
+  \item Write at least two frontends from the start; one or both can be ugly prototypes, you just want to get an idea how to structure the backend. Remember, frontends should be easy; the backend has the hard parts.
+\end{itemize}
+
+The C language is a good choice for the backend part of an application. By using GObject and GObject Introspection, your library will be available for other projects written in various programming languages. On the other hand, a Python or JavaScript library cannot be used in other languages. For the frontend(s), a higher-level language may be more convenient, depending on what languages you are already proficient with.
+
+\subsection{Other aspects to keep in mind}
+If you hesitate about the language to choose, here are other aspects to keep in mind. Note that this text is a little biased since the C language has been chosen.
+
+C is a static-typed language: the variable types and function prototypes in a program are all known at compilation time. Lots of trivial errors are discovered by the compiler, such as a typo in a function name. The compiler is also a great help when doing code refactorings, which is essential for the long-term maintainability of a program. For example when you split a class in two, if the code using the initial class is not updated correctly, the compiler will kindly tell you so.
+%With a dynamic-typed language like Python, unit tests with 100\% code coverage are needed to detect all the errors that a compiler would detect. Of course unit tests is also a good practice for a C codebase, since it tests also the program behavior. Unit tests can be much slower than compiling the code, so it is not practical to run every unit test when doing lots of code refactorings. Moreover, for the graphical user interface (GUI) part of the code, writing unit tests is often not a high-priority task if the application is well tested by its developers.
+
+C is an explicit-typed language: the variable types are visible in the code. It is a form of auto-documentation. Knowing the type of a variable is important to understand the code, to know what the variable represents and what functions can be called on it.
+
+The C language has a very good toolchain: stable compilers (GCC, Clang, …), text editors (Vim, Emacs, …), debuggers (GDB, Valgrind, …), and many other tools.
+
+For some applications, a garbage collector is not appropriate because it pauses the program regularly to release unused memory. For critical code sections, such as real-time animations, it is not desirable to pause the program during several seconds. In this case, manual memory management like in C is a solution.
+
+% Not really important, but still useful.
+The verbosity of C in combination with the GLib/GTK+ conventions have an advantage: the code can be searched easily with a command like \shellcmd{grep}. For example the function \lstinline{gtk_widget_show()} contains the namespace (\lstinline{gtk}), the class (\lstinline{widget}) and the method (\lstinline{show}). With an object-oriented language, the syntax is generally \lstinline{object.show()}. If ``show'' is searched in the code, there will most probably be more false positives, so a smarter tool is needed. Another advantage is that knowing the namespace and the class of a method can be useful when reading the code, it is also a form of auto-documentation.
+
+More importantly, the GLib/GTK+ API documentation is primarily written for the C language. Reading the C documentation while programming in another language is not convenient. Some tools are currently in development to generate the API documentation for another target language, so hopefully in the future it won't be a problem anymore.
+
+GLib/GTK+ are themselves written in C. So when programming in C, there is no extra layer. An extra layer is potentially a source of additional bugs and maintenance burdens.
+
+That said, if (1) you're not comfortable in C, (2) you're already proficient with a higher-level language, (3) you plan to write just a small application or plugin, then choosing the higher-level language makes perfect sense.
+
+\section{The development environment}
+
+This section describes the development environment typically used when programming with GLib and GTK+ on a Unix system.
+
+On a GNU/Linux distribution, a single package or group can often be installed to get a full C development environment, including, but not limited to:
+\begin{itemize}
+  \item a C89-compatible compiler, GCC for instance;
+  \item the GNU debugger GDB;
+  \item GNU Make;
+  \item the Autotools (Autoconf, Automake and Libtool);
+  \item the man-pages of: the Linux kernel and the glibc\footnote{Do not confuse the GNU C Library (glibc) with GLib. The former is lower-level.}.
+\end{itemize}
+
+For using GLib and GTK+ as a developer, there are several solutions:
+\begin{itemize}
+  \item The headers and the documentation can be installed with the package manager. The package's names end typically with one of the following suffixes: \texttt{-devel}, \texttt{-dev} or \texttt{-doc}. For example \texttt{glib2-devel} and \texttt{glib2-doc} on Fedora.
+  \item The latest versions of GLib and GTK+ can be installed with Jhbuild\footnote{\url{https://wiki.gnome.org/Projects/Jhbuild}}.
+\end{itemize}
+
+To read the API documentation of GLib and GTK+, Devhelp is a handy application, if you have installed the \texttt{-dev} or \texttt{-doc} package. For the text editor or IDE, there are many choices (and a source of many trolls): Vim, Emacs, gedit, Anjuta, MonoDevelop/Xamarin Studio, Geany, … A promising specialized IDE for GNOME is Builder, currently in development. Finally, Glade is a useful application for building graphically GUIs with GTK+.
+
+Pay attention to not use deprecated APIs for newly-written code. Be sure that you read the latest documentations. They are also available online at:\\
+\url{https://developer.gnome.org/}
