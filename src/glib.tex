@@ -1,5 +1,293 @@
 \chapter{GLib, the core library}
 
-GLib is the low-level core library that forms the basis for projects such as GTK+ and GNOME. It provides data structures, utility functions, portability wrappers, and other essential functionality such as an event loop and threads.
+GLib is the low-level core library that forms the basis for projects such as GTK+ and GNOME. It provides data structures, utility functions, portability wrappers, and other essential functionality such as an event loop and threads. GLib is available on most Unix-like systems and Windows.
 
-%TODO take the GGAD (from Havoc Pennington) GLib chapter and update it.
+This chapter covers some of the most commonly-used features. GLib is simple, and the concepts are familiar; so we'll move quickly. For more complete coverage of GLib, see the latest API documentation that comes with the library (for the development environment, see section~\ref{intro-dev-environment} on p.~\pageref{intro-dev-environment}). By the way: if you have very specific questions about the implementation, don't be afraid to look at the source code. Normally the documentation contains enough information, but if you come across a missing detail, please file a bug (of course, the best would be with a provided patch).
+
+GLib's various facilities are intended to have a consistent interface; the coding style is semi-object-oriented, and identifiers are prefixed with ``g'' to create a kind of namespace.
+
+GLib has a few toplevel headers:
+\begin{itemize}
+  \item \header{glib.h}, the main header;
+  \item \header{gmodule.h} for dynamic loading of modules;
+  \item \header{glib-unix.h} for Unix-specific APIs;
+  \item \header{glib/gi18n.h} and \header{glib/gi18n-lib.h} for internationalization;
+  \item \header{glib/gprintf.h} and \header{glib/gstdio.h} to avoid pulling in all of stdio.
+\end{itemize}
+
+\section{Basics}
+
+GLib provides substitutes for many standard and commonly-used C language constructs. This section describes GLib's fundamental type definitions, macros, memory allocation routines, and string utility functions.
+
+\subsection{Type Definitions}
+
+Rather than using C's standard types (\lstinline{int}, \lstinline{long}, etc.) GLib defines its own. These serve a variety of purposes. For example, \lstinline{gint32} is guaranteed to be 32 bits wide, something no standard C type can ensure. \lstinline{guint} is simply easier to type than \lstinline{unsigned}. A few of the typedefs exist only for consistency; for example, \lstinline{gchar} is always equivalent to the standard \lstinline{char}.
+
+%TODO add gsize, since it's used later in this chapter
+The most important primitive types defined by GLib:
+\begin{itemize}
+  \item \lstinline{gint8}, \lstinline{guint8}, \lstinline{gint16}, \lstinline{guint16}, \lstinline{gint32}, \lstinline{guint32}, \lstinline{gint64}, \lstinline{guint64} --- these give you integers of a guaranteed size. (If it isn't obvious, the \lstinline{guint} types are unsigned, the \lstinline{gint} types are signed.)
+
+  \item \lstinline{gboolean} is useful to make your code more readable, since C89 has no \lstinline{bool} type.
+
+  \item \lstinline{gchar}, \lstinline{gshort}, \lstinline{glong}, \lstinline{gint}, \lstinline{gfloat}, \lstinline{gdouble} are purely cosmetic.
+
+  \item \lstinline{gpointer} may be more convenient to type than \lstinline{void *}. \lstinline{gconstpointer} gives you \lstinline{const void *}. (\lstinline{const gpointer} will \emph{not} do what you typically mean it to; spend some time with a good book on C if you don't see why.)
+\end{itemize}
+
+\subsection{Frequently Used Macros}
+
+GLib defines a number of familiar macros used in many C programs, shown in Listing~\ref{glib-simplemacros}. All of these should be self-explanatory. \lstinline{MIN()}/\lstinline{MAX()} return the smaller or larger of their arguments. \lstinline{ABS()} returns the absolute value of its argument. \lstinline{CLAMP(x, low, high)} means \lstinline{x}, unless \lstinline{x} is outside the range [\lstinline{low},~\lstinline{high}]; if \lstinline{x} is below the range, \lstinline{low} is returned; if \lstinline{x} is above the range, \lstinline{high} is returned. In addition to the macros shown in Listing~\ref{glib-simplemacros}, \lstinline{TRUE}/\lstinline{FALSE}/\lstinline{NULL} are defined as the usual \lstinline{1}/\lstinline{0}/\lstinline{((void*)0)}.
+
+\begin{lstlisting}[float, caption={Familiar C Macros}, label=glib-simplemacros]
+#include <glib.h>
+
+MAX (a, b);
+MIN (a, b);
+ABS (x);
+CLAMP (x, low, high);
+\end{lstlisting}
+
+There are also many macros unique to GLib, such as the portable \lstinline{gpointer}-to-\lstinline{gint} and \lstinline{gpointer}-to-\lstinline{guint} conversions shown in Listing~\ref{glib-pointerint}.
+
+\begin{lstlisting}[float, caption={Macros for storing integers in pointers}, label=glib-pointerint]
+#include <glib.h>
+
+GINT_TO_POINTER (p);
+GPOINTER_TO_INT (p);
+GUINT_TO_POINTER (p);
+GPOINTER_TO_UINT (p);
+\end{lstlisting}
+
+Most of GLib's data structures are designed to store a \lstinline{gpointer}. If you want to store pointers to dynamically allocated objects, this is the right thing. However, sometimes you want to store a simple list of integers without having to dynamically allocate them. Though the C standard does not strictly guarantee it, it is possible to store a \lstinline{gint} or \lstinline{guint} in a \lstinline{gpointer} variable on the wide range of platforms GLib has been ported to; in some cases, an intermediate cast is required. The macros in Listing~\ref{glib-pointerint} abstract the presence of the cast.
+
+Here's an example:
+\begin{lstlisting}
+gint my_int;
+gpointer my_pointer;
+
+my_int = 5;
+my_pointer = GINT_TO_POINTER (my_int);
+printf ("We are storing %d\n", GPOINTER_TO_INT (my_pointer));
+\end{lstlisting}
+
+Be careful, though; these macros allow you to store an integer in a pointer, but storing a pointer in an integer will \emph{not} work. To do that portably, you must store the pointer in a \lstinline{long}. (It's undoubtedly a bad idea to do so, however.)
+
+\subsection{Debugging Macros}
+
+GLib has a nice set of macros you can use to enforce invariants and preconditions in your code. GTK+ uses these liberally -- one of the reasons it's so stable and easy to use. They all disappear when you define \lstinline{G_DISABLE_CHECKS} or \lstinline{G_DISABLE_ASSERT}, so there's no performance penalty in production code. Using these liberally is a very, very good idea. You'll find bugs much faster if you do. You can even add assertions and checks whenever you find a bug to be sure the bug doesn't reappear in future versions -- this complements a regression suite. Checks are especially useful when the code you're writing will be used as a black box by other programmers; users will immediately know when and how they've misused your code.
+
+Of course you should be very careful to ensure your code isn't subtly dependent on debug-only statements to function correctly. Statements that will disappear in production code should \emph{never} have side effects.
+
+\begin{lstlisting}[float, caption={Precondition Checks}, label=glib-precondition]
+#include <glib.h>
+
+g_return_if_fail (condition);
+g_return_val_if_fail (condition, return_value);
+\end{lstlisting}
+
+Listing~\ref{glib-precondition} shows GLib's precondition checks. \lstinline{g_return_if_fail()} prints a warning and immediately returns from the current function if \lstinline{condition} is \lstinline{FALSE}. \lstinline{g_return_val_if_fail()} is similar but allows you to return some \lstinline{return_value}. These macros are incredibly useful -- if you use them liberally, especially in combination with GObject's runtime type checking (see chapter~\ref{gobject}), you'll halve the time you spend looking for bad pointers and type errors.
+
+Using these functions is simple; here's an example from the GLib hash table implementation:
+\begin{lstlisting}
+void
+g_hash_table_foreach (GHashTable *hash_table,
+                      GHFunc      func,
+                      gpointer    user_data)
+{
+  gint i;
+
+  g_return_if_fail (hash_table != NULL);
+  g_return_if_fail (func != NULL);
+
+  for (i = 0; i < hash_table->size; i++)
+    {
+      guint node_hash = hash_table->hashes[i];
+      gpointer node_key = hash_table->keys[i];
+      gpointer node_value = hash_table->values[i];
+
+      if (HASH_IS_REAL (node_hash))
+        (* func) (node_key, node_value, user_data);
+    }
+}
+\end{lstlisting}
+
+Without the checks, passing \lstinline{NULL} as a parameter to this function would result in a mysterious segmentation fault. The person using the library would have to figure out where the error occurred with a debugger, and maybe even dig in to the GLib code to see what was wrong. With the checks, they'll get a nice error message telling them that \lstinline{NULL} arguments are not allowed.
+
+\begin{lstlisting}[float, caption={Assertions}, label=glib-assertions]
+#include <glib.h>
+
+g_assert (condition);
+g_assert_not_reached ();
+\end{lstlisting}
+
+GLib also has more traditional assertion macros, shown in Listing~\ref{glib-assertions}. \lstinline{g_assert()} is basically identical to \lstinline{assert()}, but responds to \lstinline{G_DISABLE_ASSERT} and behaves consistently across all platforms. \lstinline{g_assert_not_reached()} is also provided; this is an assertion which always fails. Assertions call \lstinline{abort()} to exit the program and (if your environment supports it) dump a core file for debugging purposes.
+
+Fatal assertions should be used to check \emph{internal consistency} of a function or library, while \lstinline{g_return_if_fail()} is intended to ensure sane values are passed to the public interfaces of a program module. That is, if an assertion fails, you typically look for a bug in the module containing the assertion; if a \lstinline{g_return_if_fail()} check fails, you typically look for the bug in the code which invokes the module.
+
+This code from GLib's calendrical calculations module shows the difference:
+\begin{lstlisting}
+GDate *
+g_date_new_dmy (GDateDay   day,
+                GDateMonth month,
+                GDateYear  year)
+{
+  GDate *date;
+  g_return_val_if_fail (g_date_valid_dmy (day, month, year), NULL);
+
+  date = g_new (GDate, 1);
+
+  date->julian = FALSE;
+  date->dmy = TRUE;
+
+  date->month = month;
+  date->day = day;
+  date->year = year;
+
+  g_assert (g_date_valid (date));
+
+  return date;
+}
+\end{lstlisting}
+
+The precondition check at the beginning ensures the user passes in reasonable values for the day, month and year; the assertion at the end ensures that GLib constructed a sane object, given sane values.
+
+\lstinline{g_assert_not_reached()} should be used to mark ``impossible'' situations; a common use is to detect switch statements that don't handle all possible values of an enumeration:
+\begin{lstlisting}
+switch (value)
+  {
+  case FOO_ONE:
+    break;
+
+  case FOO_TWO:
+    break;
+
+  default:
+    g_assert_not_reached ();
+  }
+\end{lstlisting}
+
+All of the debugging macros print a warning using GLib's \lstinline{g_log()} facility, which means the warning includes the name of the originating application or library, and you can optionally install a replacement warning-printing routine. For example, you might send all warnings to a dialog box or log file instead of printing them on the console.
+
+\subsection{Memory}
+
+GLib wraps the standard \lstinline{malloc()} and \lstinline{free()} with its own \lstinline{g_} variants, \lstinline{g_malloc()} and \lstinline{g_free()}, shown in Listing~\ref{glib-malloc-free}.
+These are nice in several small ways:
+
+\begin{itemize}
+  \item \lstinline{g_malloc()} always returns a \lstinline{gpointer}, never a \lstinline{char *}, so there's no need to cast the return value.
+
+  \item \lstinline{g_malloc()} aborts the program if the underlying \lstinline{malloc()} fails, so you don't have to check for a \lstinline{NULL} return value.
+
+  \item \lstinline{g_malloc()} gracefully handles a \lstinline{size} of \lstinline{0}, by returning \lstinline{NULL}.
+
+  \item \lstinline{g_free()} will ignore any \lstinline{NULL} pointers you pass to it.
+\end{itemize}
+
+\begin{lstlisting}[float, caption={GLib memory allocation}, label=glib-malloc-free]
+#include <glib.h>
+
+gpointer g_malloc (gsize n_bytes);
+void g_free (gpointer mem);
+gpointer g_realloc (gpointer mem, gsize n_bytes);
+gpointer g_memdup (gconstpointer mem, guint n_bytes);
+\end{lstlisting}
+
+It's important to match \lstinline{g_malloc()} with \lstinline{g_free()}, plain \lstinline{malloc()} with \lstinline{free()}, and (if you're using C++) \lstinline[language=C++]{new} with \lstinline[language=C++]{delete}. Otherwise bad things can happen, since these allocators may use different memory pools (and \lstinline[language=C++]{new}/\lstinline[language=C++]{delete} call constructors and destructors).
+
+Of course there's a \lstinline{g_realloc()} equivalent to \lstinline{realloc()}. There's also a convenient \lstinline{g_malloc0()} which fills allocated memory with 0s, and \lstinline{g_memdup()} which returns a copy of \lstinline{n_bytes} bytes starting at \lstinline{mem}. \lstinline{g_realloc()} and \lstinline{g_malloc0()} will both accept a size of 0, for consistency with \lstinline{g_malloc()}. However, \lstinline{g_memdup()} will not.
+
+%TODO mention this in the API doc
+If it isn't obvious: \lstinline{g_malloc0()} fills raw memory with unset bits, not the value 0 for whatever type you intend to put there. Occasionally someone expects to get an array of floating point numbers initialized to 0.0; this will \emph{not} work.
+
+Finally, there are type-aware allocation macros, shown in Listing~\ref{glib-g_new}. The \lstinline{type} argument to each of these is the name of a type, and the \lstinline{count} argument is the number of \lstinline{type}-size blocks to allocate. These macros save you some typing and multiplication, and are thus less error-prone. They automatically cast to the target pointer type, so attempting to assign the allocated memory to the wrong kind of pointer should trigger a compiler warning. (If you have warnings turned on, as a responsible programmer should!)
+
+\begin{lstlisting}[float, caption={Allocation macros}, label=glib-g_new]
+#include <glib.h>
+
+g_new (type, count);
+g_new0 (type, count);
+g_renew (type, mem, count);
+\end{lstlisting}
+
+%TODO explain GSlice
+
+\subsection{String Handling}
+
+GLib provides a number of functions for string handling; some are unique to GLib, and some solve portability concerns. They all interoperate nicely with the GLib memory allocation routines.
+
+For those interested in a better string than \lstinline{gchar *}, there's also a \lstinline{GString} type. It isn't covered in this book, see the API documentation for further information.
+
+\begin{lstlisting}[float, caption={Portability Wrapper}, label=glib-strext]
+gint g_snprintf (gchar *string, gulong n, gchar const *format, ...);
+\end{lstlisting}
+
+Listing~\ref{glib-strext} shows a substitute GLib provides for the \lstinline{snprintf()} function. \lstinline{g_snprintf()} wraps native \lstinline{snprintf()} on platforms that have it, and provides an implementation on those that don't.
+
+Pay attention to not use the crash-causing, security-hole-creating, generally evil \lstinline{sprintf()} function. By using the relatively safe \lstinline{g_snprintf()} or \lstinline{g_strdup_printf()} (see below), you can say goodbye to \lstinline{sprintf()} forever.
+
+\begin{lstlisting}[float, caption={Allocating Strings}, label=glib-strdup]
+#include <glib.h>
+
+gchar * g_strdup (const gchar *str);
+gchar * g_strndup (const gchar *str, gsize n);
+gchar * g_strdup_printf (const gchar *format, ...);
+gchar * g_strdup_vprintf (const gchar *format, va_list args);
+gchar * g_strnfill (gsize length, gchar fill_char);
+\end{lstlisting}
+
+Listing~\ref{glib-strdup} shows GLib's rich array of functions for allocating strings. Unsurprisingly, \lstinline{g_strdup()} and \lstinline{g_strndup()} produce an allocated copy of \lstinline{str} or the first \lstinline{n} characters of \lstinline{str}. For consistency with the GLib memory allocation functions, they return \lstinline{NULL} if passed a \lstinline{NULL} pointer. The \lstinline{printf()} variants return a formatted string. \lstinline{g_strnfill()} returns a string of size \lstinline{length} filled with \lstinline{fill_char}.
+
+\lstinline{g_strdup_printf()} deserves a special mention; it is a simpler way to handle this common piece of code:
+\begin{lstlisting}
+gchar *str = g_malloc (256);
+g_snprintf (str, 256, "%d printf-style %s", num, string);
+\end{lstlisting}
+
+Instead you could say this, and avoid having to figure out the proper length of the buffer to boot:
+\begin{lstlisting}
+gchar *str = g_strdup_printf ("%d printf-style %s", num, string);
+\end{lstlisting}
+
+\begin{lstlisting}[float, caption={In-place string modifications}, label=glib-strmanip]
+#include <glib.h>
+
+gchar * g_strchug (gchar *string);
+gchar * g_strchomp (gchar *string);
+gchar * g_strstrip (gchar *string);
+\end{lstlisting}
+
+The functions in Listing~\ref{glib-strmanip} modify a string in-place: \lstinline{g_strchug()} and \lstinline{g_strchomp()} ``chug'' the string (remove leading spaces), or ``chomp'' it (remove trailing spaces). Those two functions return the string, in addition to modifying it in-place; in some cases it may be convenient to use the return value. There is a macro, \lstinline{g_strstrip()}, which combines both functions to remove both leading and trailing spaces.
+
+\begin{lstlisting}[float, caption={String Conversions}, label=glib-strformats]
+#include <glib.h>
+
+gdouble g_strtod (const gchar *nptr, gchar **endptr);
+const gchar * g_strerror (gint errnum);
+const gchar * g_strsignal (gint signum);
+\end{lstlisting}
+
+Listing~\ref{glib-strformats} shows a few more semi-standard functions GLib wraps. \lstinline{g_strtod} is like \lstinline{strtod()} -- it converts string \lstinline{nptr} to a double -- with the exception that it will also attempt to convert the double in the \texttt{"C"} locale if it fails to convert it in the user's default locale. \lstinline{*endptr} is set to the first unconverted character, i.e. any text after the number representation. If conversion fails, \lstinline{*endptr} is set to \lstinline{nptr}. \lstinline{endptr} may be \lstinline{NULL}, causing it to be ignored.
+
+\lstinline{g_strerror()} and \lstinline{g_strsignal()} are like their non-\lstinline{g_} equivalents, but portable. (They return a string representation for an \lstinline{errno} or a signal number.)
+
+\begin{lstlisting}[float, caption={Concatenating Strings}, label=glib-strconcat]
+#include <glib.h>
+
+gchar * g_strconcat (const gchar *string1, ...);
+gchar * g_strjoin (const gchar *separator, ...);
+\end{lstlisting}
+
+GLib provides some convenient functions for concatenating strings, shown in Listing~\ref{glib-strconcat}. \lstinline{g_strconcat()} returns a newly-allocated string created by concatenating each of the strings in the argument list. The last argument must be \lstinline{NULL}, so \lstinline{g_strconcat()} knows when to stop. \lstinline{g_strjoin()} is similar, but \lstinline{separator} is inserted between each string. If \lstinline{separator} is \lstinline{NULL}, no separator is used.
+
+\begin{lstlisting}[float, caption={Manipulating \lstinline{NULL}-terminated string vectors}, label=glib-strvector]
+#include <glib.h>
+
+gchar ** g_strsplit (const gchar *string,
+                     const gchar *delimiter,
+                     gint max_tokens);
+gchar * g_strjoinv (const gchar *separator, gchar **str_array);
+void g_strfreev (gchar **str_array);
+\end{lstlisting}
+
+Finally, Listing~\ref{glib-strvector} summarizes a few routines which manipulate \lstinline{NULL}-terminated arrays of strings. \lstinline{g_strsplit()} breaks \lstinline{string} at each \lstinline{delimiter}, returning a newly-allocated array. \lstinline{g_strjoinv()} concatenates each string in the array with an optional \lstinline{separator}, returning an allocated string. \lstinline{g_strfreev()} frees each string in the array and then the array itself.

@@ -65,7 +65,7 @@ The C language has a very good \emph{toolchain}: stable compilers (GCC, Clang, â
 
 For some programs, a garbage collector is not appropriate because it pauses the program regularly to release unused memory. For critical code sections, such as real-time animations, it is not desirable to pause the program during several seconds. In this case, manual memory management like in C is a solution.
 
-Less important, but still useful; the verbosity of C in combination with the GLib/GTK+ conventions have an advantage: the code can be searched easily with a command like \shellcmd{grep}. For example the function \lstinline{gtk_widget_show()} contains the namespace (\lstinline{gtk}), the class (\lstinline{widget}) and the method (\lstinline{show}). With an object-oriented language, the syntax is generally \lstinline{object.show()}. If ``show'' is searched in the code, there will most probably be more false positives, so a smarter tool is needed. Another advantage is that knowing the namespace and the class of a method can be useful when reading the code, it is another form of auto-documentation.
+Less important, but still useful; the verbosity of C in combination with the GLib/GTK+ conventions have an advantage: the code can be searched easily with a command like \shellcmd{grep}. For example the function \lstinline{gtk_widget_show()} contains the namespace (\lstinline{gtk}), the class (\lstinline{widget}) and the method (\lstinline{show}). With an object-oriented language, the syntax is generally \lstinline[language=C++]{object.show()}. If ``show'' is searched in the code, there will most probably be more false positives, so a smarter tool is needed. Another advantage is that knowing the namespace and the class of a method can be useful when reading the code, it is another form of auto-documentation.
 
 More importantly, the GLib/GTK+ API documentation is primarily written for the C language. Reading the C documentation while programming in another language is not convenient. Some tools are currently in development to generate the API documentation for another target language, so hopefully in the future it won't be a problem anymore.
 
@@ -74,6 +74,7 @@ GLib/GTK+ are themselves written in C. So when programming in C, there is no ext
 That said, if (1) you're not comfortable in C, (2) you're already proficient with a higher-level language with GObject Introspection support, (3) you plan to write just a small application or plugin, then choosing the higher-level language makes perfect sense.
 
 \section{The development environment}
+\label{intro-dev-environment}
 
 This section describes the development environment typically used when programming with GLib and GTK+ on a Unix system.
 
