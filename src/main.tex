@@ -24,8 +24,22 @@
 \usepackage{listings}
 \lstset{
   language=C,
-  basicstyle={\small\ttfamily}
+  basicstyle={\small\ttfamily},
+  basewidth=0.5em,
+  showstringspaces=false,
+  floatplacement=htbp
+% Frames look nice, but it should be used cautiously. A frame around something means that the "something" is important. A frame will maybe be used later in this book to give a summary of important things. If each piece of code is surrounded by a frame, the important text will not be as highlighted as it should.
+%   frame=single,
+%   frame=tb,
+% Will be useful later for large piece of code (create a new environment named lstlistinglarge or something like that).
+%   linewidth=15cm,
+%   xleftmargin=-1cm,
+%   xrightmargin=-1cm
 }
+
+% separate listings from the text (recommended in the Listings doc, instead of using frames)
+\newcommand{\topfigrule}{\hrule\kern-0.4pt\relax}
+\newcommand{\botfigrule}{\hrule\kern-0.4pt\relax}
 
 \newcommand{\shellcmd}[1]{\texttt{#1}}
 \newcommand{\header}[1]{\texttt{#1}}
