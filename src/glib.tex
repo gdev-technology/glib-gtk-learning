@@ -291,3 +291,227 @@ void g_strfreev (gchar **str_array);
 \end{lstlisting}
 
 Finally, Listing~\ref{glib-strvector} summarizes a few routines which manipulate \lstinline{NULL}-terminated arrays of strings. \lstinline{g_strsplit()} breaks \lstinline{string} at each \lstinline{delimiter}, returning a newly-allocated array. \lstinline{g_strjoinv()} concatenates each string in the array with an optional \lstinline{separator}, returning an allocated string. \lstinline{g_strfreev()} frees each string in the array and then the array itself.
+
+\section{Data Structures}
+
+GLib implements many common data structures, so you don't have to reinvent the wheel every time you want a linked list. This section covers GLib's implementation of linked lists, sorted binary trees, N-ary trees, and hash tables.
+
+\subsection{Lists}
+
+GLib provides generic single and doubly linked lists, \lstinline{GSList} and \lstinline{GList}, respectively. These are implemented as lists of \lstinline{gpointer}; you can use them to hold integers with the \lstinline{GINT_TO_POINTER} and \lstinline{GPOINTER_TO_INT} macros. \lstinline{GSList} and \lstinline{GList} have almost the same API's, except that there is a \lstinline{g_list_previous()} function and no \lstinline{g_slist_previous()}. This section will discuss \lstinline{GSList} but everything also applies to the doubly linked list.
+
+\begin{lstlisting}[float, caption={GSList cell}, label=glib-gslist-cell]
+typedef struct _GSList GSList;
+
+struct _GSList
+{
+  gpointer data;
+  GSList *next;
+};
+\end{lstlisting}
+
+A \lstinline{GSList} cell is a self-explanatory structure shown in Listing~\ref{glib-gslist-cell}. The structure fields are public, so you can use them directly to access the data or to traverse the list.
+
+In the GLib implementation, the empty list is simply a \lstinline{NULL} pointer. It's always safe to pass \lstinline{NULL} to list functions since it's a valid list of length 0. Code to create a list and add one element might look like this:
+\begin{lstlisting}
+GSList *list = NULL;
+gchar *element = g_strdup ("a string");
+list = g_slist_append (list, element);
+\end{lstlisting}
+
+GLib lists have a noticeable Lisp influence; the empty list is a special ``nil'' value for that reason. \lstinline{g_slist_prepend()} works much like \texttt{cons} -- it's a constant-time operation ($O(1)$) that adds a new cell to the front of the list.
+
+\begin{lstlisting}[float, caption={Changing linked list contents}, label=glib-listchanging]
+#include <glib.h>
+
+GSList * g_slist_append (GSList *list, gpointer data);
+GSList * g_slist_prepend (GSList *list, gpointer data);
+GSList * g_slist_insert (GSList *list, gpointer data, gint position);
+GSList * g_slist_remove (GSList *list, gconstpointer data);
+\end{lstlisting}
+
+Listing~\ref{glib-listchanging} shows the basic functions for changing \lstinline{GSList} contents. For all of these, you must assign the return value to your list pointer in case the head of the list changes. Note that GLib does \emph{not} store a pointer to the tail of the list, so the append, insert, and remove functions run in $O(n)$ time, with $n$ the length of the list.
+
+GLib will handle memory issues, deallocating and allocating list cells as needed. For example, the following code would remove the above-added element and empty the list:
+\begin{lstlisting}
+list = g_slist_remove (list, element);
+\end{lstlisting}
+
+\lstinline{list} is now \lstinline{NULL}. You still have to free \lstinline{element} yourself, of course.
+
+To access a list element, you refer to the \lstinline{GSList} struct directly:
+\begin{lstlisting}
+gchar *my_data = list->data;
+\end{lstlisting}
+
+To iterate over the list, you might write code like this:
+\begin{lstlisting}
+GSList *l;
+
+for (l = list; l != NULL; l = l->next)
+  {
+    gchar *str = l->data;
+    g_print ("Element: %s\n", str);
+  }
+\end{lstlisting}
+
+\begin{lstlisting}[float, caption={Freeing entire linked lists}, label=glib-listfree]
+#include <glib.h>
+
+typedef void (* GDestroyNotify) (gpointer data);
+
+void g_slist_free (GSList *list);
+void g_slist_free_full (GSList *list, GDestroyNotify free_func);
+\end{lstlisting}
+
+Listing~\ref{glib-listfree} shows functions to clear an entire list. \lstinline{g_slist_free()} removes all the links in one fell swoop. \lstinline{g_slist_free()} has no return value because it would always be \lstinline{NULL}, and you can simply assign that value to your list if you like. Obviously, \lstinline{g_slist_free()} frees only the list cells; it has no way of knowing what to do with the list contents. The smarter function \lstinline{g_slist_free_full()} takes a second argument with a destroy function pointer that is called on each element's data. To free the list containing dynamically-allocated strings, you can write:
+\begin{lstlisting}
+g_slist_free_full (list, g_free);
+
+/* If list may be used later: */
+list = NULL;
+\end{lstlisting}
+
+This is equivalent of writing:
+\begin{lstlisting}
+GSList *l;
+
+for (l = list; l != NULL; l = l->next)
+  g_free (l->data);
+
+g_slist_free (list);
+list = NULL;
+\end{lstlisting}
+
+Constructing a list using \lstinline{g_slist_append()} is a \emph{terrible} idea; use \lstinline{g_slist_prepend()} and then call \lstinline{g_slist_reverse()} if you need items in a particular order. If you anticipate frequently appending to a list, you can also keep a pointer to the last element. The following code can be used to perform efficient appends\footnote{A more convenient way is to use the \lstinline{GQueue} data type: a double-ended queue that keeps a pointer to the head, a pointer to the tail, and the length of the doubly linked list.}:
+
+\begin{lstlisting}
+void
+efficient_append (GSList   **list,
+                  GSList   **list_end,
+                  gpointer   data)
+{
+  g_return_if_fail (list != NULL);
+  g_return_if_fail (list_end != NULL);
+
+  if (*list == NULL)
+    {
+      g_assert (*list_end == NULL);
+
+      *list = g_slist_append (*list, data);
+      *list_end = *list;
+    }
+  else
+    {
+      *list_end = g_slist_append (*list_end, data)->next;
+    }
+}
+\end{lstlisting}
+
+To use this function, you would store the list and its end somewhere, and pass their address to \lstinline{efficient_append()}:
+\begin{lstlisting}
+GSList* list = NULL;
+GSList* list_end = NULL;
+
+efficient_append (&list, &list_end, g_strdup ("Foo"));
+efficient_append (&list, &list_end, g_strdup ("Bar"));
+efficient_append (&list, &list_end, g_strdup ("Baz"));
+\end{lstlisting}
+
+Of course you have to be careful not to use any list functions that might change the end of the list without updating \lstinline{list_end}.
+
+\begin{lstlisting}[float, caption={Accessing data in a linked list}, label=glib-listaccess]
+#include <glib.h>
+
+typedef void (* GFunc) (gpointer data, gpointer user_data);
+
+GSList * g_slist_find (GSList *list, gconstpointer data);
+GSList * g_slist_nth (GSList *list, guint n);
+gpointer g_slist_nth_data (GSList *list, guint n);
+GSList * g_slist_last (GSList *list);
+gint g_slist_index (GSList *list, gconstpointer data);
+void g_slist_foreach (GSList *list, GFunc func, gpointer user_data);
+\end{lstlisting}
+
+For accessing list elements, the functions in Listing~\ref{glib-listaccess} are provided. None of these change the list's structure. \lstinline{g_slist_foreach()} applies a \lstinline{GFunc} to each element of the list.
+
+Used in \lstinline{g_slist_foreach()}, your \lstinline{GFunc} will be called on each \lstinline{list->data} in \lstinline{list}, passing the \lstinline{user_data} you provided to \lstinline{g_slist_foreach()}. \lstinline{g_slist_foreach()} is comparable to Scheme's ``map'' function.
+
+For example, you might have a list of strings, and you might want to be able to create a parallel list with some transformation applied to the strings. Here is some code, using the \lstinline{efficient_append()} function from an earlier example:
+
+\begin{lstlisting}
+typedef struct _AppendContext AppendContext;
+struct _AppendContext
+{
+  GSList *list;
+  GSList *list_end;
+  const gchar *append;
+};
+
+static void
+append_foreach (gpointer data,
+                gpointer user_data)
+{
+  gchar *oldstring = data;
+  AppendContext *context = user_data;
+
+  efficient_append (&context->list,
+                    &context->list_end,
+                    g_strconcat (oldstring, context->append, NULL));
+}
+
+GSList *
+copy_with_append (GSList      *list_of_strings,
+                  const gchar *append)
+{
+  AppendContext context;
+
+  context.list = NULL;
+  context.list_end = NULL;
+  context.append = append;
+
+  g_slist_foreach (list_of_strings, append_foreach, &context);
+
+  return context.list;
+}
+\end{lstlisting}
+
+GLib and GTK+ use the ``function pointer and user data'' idiom heavily. If you have functional programming experience, this  is much like using lambda expressions to create a \emph{closure}. (A closure combines a function with an \emph{environment} -- a set of name-value bindings. In this case the ``environment'' is the user data you pass to \lstinline{append_foreach()}, and the ``closure'' is the combination of the function pointer and the user data.)
+
+\begin{lstlisting}[float, caption={Manipulating a linked list}, label=glib-listmanip]
+#include <glib.h>
+
+guint g_slist_length (GSList *list);
+GSList * g_slist_concat (GSList *list1, GSList *list2);
+GSList * g_slist_reverse (GSList *list);
+GSList * g_slist_copy (GSList *list);
+\end{lstlisting}
+
+There are some handy list-manipulation routines, listed in Listing~\ref{glib-listmanip}. With the exception of \lstinline{g_slist_copy()}, all of these affect the lists in-place. Which means you must assign the return value and forget about the passed-in pointer, just as you do when adding or removing list elements. \lstinline{g_slist_copy()} returns a newly-allocated list, so you can continue to use both lists and must free both lists eventually.
+
+\begin{lstlisting}[float, caption={Sorted lists}, label=glib-listsorted]
+#include <glib.h>
+
+typedef gint (* GCompareFunc) (gconstpointer a, gconstpointer b);
+
+GSList * g_slist_insert_sorted (GSList *list, gpointer data, GCompareFunc func);
+GSList * g_slist_sort (GSList *list, GCompareFunc compare_func);
+GSList * g_slist_find_custom (GSList *list, gconstpointer data, GCompareFunc func);
+\end{lstlisting}
+
+Finally, there are some provisions for sorted lists, shown in Listing~\ref{glib-listsorted}. To use these, you must write a \lstinline{GCompareFunc}, which is just like the comparison function in the standard C \lstinline{qsort()}.
+
+If \lstinline{a < b}, the \lstinline{GCompareFunc} should return a negative value; if \lstinline{a > b} a positive value; if \lstinline{a == b} it should return 0.
+
+Once you have a comparison function, you can insert an element into an already-sorted list, or sort an entire list. Lists are sorted in ascending order. You can even recycle your \lstinline{GCompareFunc} to find list elements, using \lstinline{g_slist_find_custom()}.
+
+Be careful with sorted lists; misusing them can rapidly become very inefficient. For example, \lstinline{g_slist_insert_sorted()} is an $O(n)$ operation, but if you use it in a loop to insert multiple elements the loop runs in quadratic time ($O(n^2)$). It's better to simply prepend all your elements, and then call \lstinline{g_slist_sort()}. \lstinline{g_slist_sort()} runs in $O(n \log n)$.
+
+You can also use the \lstinline{GSequence} data structure for sorted data. \lstinline{GSequence} has an API of a list, but is implemented internally with a balanced binary tree.
+
+% \subsection{Trees}
+% \subsubsection{GTree}
+% \subsubsection{GNode}
+% \subsection{Hash Tables}
+%
+% \section{Other Features}
