@@ -2,10 +2,6 @@
 
 This text is a guide to get started with the GLib/GTK+ development platform, with the C language. It is sometimes assumed that the reader uses a Unix-like system.
 
-The GLib libraries (GLib core, GObject and GIO) can be used independently of GTK+. GLib can be used to write operating system services (daemons, …), libraries, command line utilities and the like. GLib offers higher-level APIs than the POSIX standard, it is therefore more comfortable to write a C program with GLib. GObject simplifies the object-oriented programming and event-driven programming paradigms in C. Event-driven programming is not only useful for graphical user interfaces (with user events such as key presses and mouse clicks), but also for daemons that respond to hardware changes (a USB stick inserted, a second monitor connected, a printer low on paper), that listen to network connections or messages from other processes, and so on.
-
-GTK+ is a widget toolkit based on GLib that can be used to develop applications with a graphical user interface (GUI).
-
 \section{License}
 \label{intro-license}
 
@@ -19,9 +15,41 @@ This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 Intern
 Some sections are based on the book \emph{GTK+/Gnome Application Development}, by Havoc Pennington, written in 1999, edited by the New Riders Publishing, and licensed under the Open Publication License. The latest version of the Open Publication License can be found at:\\
 \url{http://www.opencontent.org/openpub/}
 
+\section{What is GLib and GTK+?}
+
+Roughly speaking, GLib is a set of libraries: GLib core, GObject and GIO.
+
+GLib core provides data structure handling for C (linked lists, trees, hash tables, …), portability wrappers, an event loop, threads, dynamic loading of modules and lots of utility functions.
+
+GObject -- which depends on GLib core -- simplifies the object-oriented programming and event-driven programming paradigms in C. Event-driven programming is not only useful for graphical user interfaces (with user events such as key presses and mouse clicks), but also for daemons that respond to hardware changes (a USB stick inserted, a second monitor connected, a printer low on paper), that listen to network connections or messages from other processes, and so on.
+
+GIO -- which depends on GLib core and GObject -- provides high-level APIs for input/output: reading a local file, a remote file, a network stream, inter-process communication with D-Bus, and many more.
+
+The GLib libraries can be used to write operating system services (daemons, …), libraries, command line utilities and such like. GLib offers higher-level APIs than the POSIX standard, it is therefore more comfortable to write a C program with GLib.
+
+GTK+ is a widget toolkit based on GLib that can be used to develop applications with a graphical user interface (GUI). The first version of GTK+, or the GIMP Tool Kit\footnote{The name ``The GIMP Tool Kit'' is now rarely used, today it is more commonly known as GTK+ for short.}, was mainly written by Peter~Mattis in 1996 for the GIMP (GNU Image Manipulation Program), but has quickly become a general-purpose library. The ``+'' has been added later to distinguish between the original version and a new version that added object oriented features. GLib started as part of GTK+, but is now a standalone library.
+
+GLib and GTK+ are part of the GNU Project, whose overall goal is developing a free operating system (named GNU) plus applications to go with it. GNU stands for ``GNU's Not Unix'', a humorous way of saying that the GNU operating system is Unix-compatible. You can learn more about GNU at \url{http://www.gnu.org}.
+
+\section{The GNOME Desktop}
+
+An important project for GLib and GTK+ is GNOME. GNOME, which is also part of GNU, is a free/libre desktop environment started in 1997 by Miguel~de~Icaza and Federico~Mena-Quintero. GNOME uses extensively GTK+, and the latter is now developed primarily by GNOME developers.
+
+``GNOME'' is actually an acronym: GNU Network Object Model Environment\footnote{As for GTK+, the complete name of GNOME is rarely used and doesn't reflect today's reality.}. Originally, the project was intended to create a framework for application objects, similar to Microsoft's OLE and COM technologies. However, the scope of the project rapidly expanded; it became clear that substantial groundwork was required before the ``network object'' part of the name could become reality. Old versions of GNOME included an object embedding architecture called Bonobo, and GNOME~1.0 included a fast, light CORBA ORB called ORBit. Bonobo has been replaced by D-Bus, an inter-process communication system.
+
+GNOME has two important faces. From the user's perspective, it is an integrated desktop environment and application suite. From the programmer's perspective, it is an application development framework (made up of numerous useful libraries). Applications written with the GNOME libraries run fine even if the user isn't running the desktop environment, but they integrate nicely with the GNOME desktop if it's available.
+
+The desktop environment includes a ``shell'' for task switching and launching programs, a ``control center'' for configuration, lots of applications such as a file manager, a web browser, a movie player, etc. These programs hide the traditional Unix command line behind an easy-to-use graphical interface.
+
+GNOME's development framework makes it possible to write consistent, easy-to-use, interoperable applications. The designers of windowing systems such as X11 or Wayland made a deliberate decision not to impose any user interface policy on developers; GNOME adds a ``policy layer,'' creating a consistent look-and-feel. Finished GNOME applications work well with the GNOME desktop, but can also be used ``standalone'' -- users only need to install GNOME's shared libraries. A GNOME application isn't tied to a specific windowing system, GTK+ provides backends for the X Window System, Wayland, Mac OS X, Windows, or even a web browser.
+
+There are new GLib, GTK+ and GNOME stable releases every six months, around March and September. A version number has the form X.Y.Z. ``Y'' is even for stable versions, and is odd for unstable versions. For example, the 3.14 version is stable, but 3.15 is unstable. A new minor stable version (e.g. 3.14.0 $\rightarrow$ 3.14.1) doesn't add new features, only translation updates, bug fixes and performance improvements. GNOME components are meant to be installed with the same versions, alongside the version of GTK+ and GLib released at the same time; it's a bad idea to run a GNOME application in version 3.14 with GTK+~3.12, for instance. Currently GNOME and GTK+ have the same version numbers, but not GLib (GLib~2.42 was released at the same time as GTK+~3.14). For a library, a new major version number (``X'' in X.Y.Z) generally means there has been an API break, but hopefully previous major versions are parallel-installable with the new version. During a development cycle (e.g 3.15), there is no API stability guarantees for \emph{new} features.
+
+More information about GNOME: \url{http://www.gnome.org/}
+
 \section{Prerequisites}
 
-Here is a non-exhaustive list of prerequisites.
+Here is a list of prerequisites to read this book.
 
 \begin{itemize}
   \item This text supposes that you already know the C language. The reference book is \emph{The C Programming Language}, by Brian~Kernighan and Dennis~Ritchie \cite{k-r-book}.
@@ -34,12 +62,12 @@ Here is a non-exhaustive list of prerequisites.
 
   \item Not strictly required, but highly recommended is to use a version control system like Git. A good book is \emph{Pro Git}, by Scott~Chacon \cite{pro-git}.
 \end{itemize}
- 
-\section{Why and when using the C language?}
+
+\section{Why and When Using the C Language?}
 
 The GLib and GTK+ libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject, the GLib object system. For example Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}} is a new programming language based on GObject. JavaScript and Python are also supported, among other languages. So why and when choosing the C language? For writing a daemon on a Unix system, C is the \emph{de facto} language. But it is less obvious for an application; so let's first look at how to structure an application codebase.
 
-\subsection{Separate the backend from the frontend}
+\subsection{Separate the Backend from the Frontend}
 % Adapted from a FAQ question in GGAD.
 A good practice is to separate the graphical user interface (GUI) from the rest of the application. For a variety of reasons, an application's graphical interface tends to be an exceptionally volatile and ever-changing piece of software. It's the focus of most user requests for change. It is difficult to plan and execute well the first time around -- often you will discover that some aspect of it is unpleasant to use only after you have written it. Having several different user interfaces is sometimes desirable, for example a command-line version, or a web-based interface.
 
@@ -55,7 +83,7 @@ There are many ways to discipline yourself to keep your application separated. A
 
 The C language is a good choice for the backend part of an application. By using GObject and GObject Introspection, your library will be available for other projects written in various programming languages. On the other hand, a Python or JavaScript library cannot be used in other languages. For the frontend(s), a higher-level language may be more convenient, depending on what languages you are already proficient with.
 
-\subsection{Other aspects to keep in mind}
+\subsection{Other Aspects to Keep in Mind}
 If you hesitate about the language to choose, here are other aspects to keep in mind. Note that this text is a little biased since the C language has been chosen.
 
 C is a static-typed language: the variable types and function prototypes in a program are all known at compilation time. Lots of trivial errors are discovered by the compiler, such as a typo in a function name. The compiler is also a great help when doing code refactorings, which is essential for the long-term maintainability of a program. For example when you split a class in two, if the code using the initial class is not updated correctly, the compiler will kindly tell you so\footnote{Well, \emph{kindly} is perhaps not the best description, spewing out loads of errors is closer to reality.}. With test-driven development (TDD), and by writing unit tests for \emph{everything}, writing a huge codebase in a dynamic-typed language like Python is also feasible. With a very good code coverage, the unit tests will also detect errors when refactoring the code. But unit tests can be much slower to execute than compiling the code, since it tests also the program behavior. So it's maybe not convenient to run all unit tests when doing code refactorings. Of course writing unit tests is also a good practice for a C codebase! However for the GUI part of the code, writing unit tests is often not a high-priority task if the application is well tested by its developers.
@@ -74,7 +102,7 @@ GLib/GTK+ are themselves written in C. So when programming in C, there is no ext
 
 That said, if (1) you're not comfortable in C, (2) you're already proficient with a higher-level language with GObject Introspection support, (3) you plan to write just a small application or plugin, then choosing the higher-level language makes perfect sense.
 
-\section{The development environment}
+\section{The Development Environment}
 \label{intro-dev-environment}
 
 This section describes the development environment typically used when programming with GLib and GTK+ on a Unix system.
