@@ -303,7 +303,7 @@ GLib implements many common data structures, so you don't have to reinvent the w
 
 GLib provides generic single and doubly linked lists, \lstinline{GSList} and \lstinline{GList}, respectively. These are implemented as lists of \lstinline{gpointer}; you can use them to hold integers with the \lstinline{GINT_TO_POINTER} and \lstinline{GPOINTER_TO_INT} macros. \lstinline{GSList} and \lstinline{GList} have almost the same API's, except that there is a \lstinline{g_list_previous()} function and no \lstinline{g_slist_previous()}. This section will discuss \lstinline{GSList} but everything also applies to the doubly linked list.
 
-\begin{lstlisting}[float, caption={GSList cell}, label=glib-gslist-cell]
+\begin{lstlisting}[float, caption={\lstinline{GSList} cell}, label=glib-gslist-cell]
 typedef struct _GSList GSList;
 
 struct _GSList
@@ -512,9 +512,202 @@ Be careful with sorted lists; misusing them can rapidly become very inefficient.
 
 You can also use the \lstinline{GSequence} data structure for sorted data. \lstinline{GSequence} has an API of a list, but is implemented internally with a balanced binary tree.
 
-% \subsection{Trees}
-% \subsubsection{GTree}
-% \subsubsection{GNode}
+\subsection{Trees}
+
+There are two different kinds of tree in GLib; \lstinline{GTree} is your basic balanced binary tree, useful to store key-value pairs sorted by key; \lstinline{GNode} stores arbitrary tree-structured data, such as a parse tree or taxonomy.
+
+\subsubsection{GTree}
+
+\begin{lstlisting}[float, caption={Creating and destroying balanced binary trees}, label=glib-treeconstruct]
+#include <glib.h>
+
+typedef gint (* GCompareFunc) (gconstpointer a, gconstpointer b);
+typedef gint (* GCompareDataFunc) (gconstpointer a,
+                                   gconstpointer b,
+                                   gpointer user_data);
+
+GTree * g_tree_new (GCompareFunc key_compare_func);
+
+GTree * g_tree_new_full (GCompareDataFunc key_compare_func,
+                         gpointer key_compare_data,
+                         GDestroyNotify key_destroy_func,
+                         GDestroyNotify value_destroy_func);
+
+void g_tree_destroy (GTree *tree);
+\end{lstlisting}
+
+To create and destroy a \lstinline{GTree}, use a constructor and destructor displayed in Listing~\ref{glib-treeconstruct}. \lstinline{GCompareFunc} is the same \lstinline{qsort()}-style comparison function described for \lstinline{GSList}; in this case it's used to compare keys in the tree. \lstinline{g_tree_new_full()} is useful to ease memory management for dynamically-allocated keys and values.
+
+The \lstinline{GTree} struct is an opaque data type. Its content is accessed and modified only with public functions.
+
+\begin{lstlisting}[float, caption={Manipulating \lstinline{GTree} contents}, label=glib-treemanip]
+#include <glib.h>
+
+void g_tree_insert (GTree *tree, gpointer key, gpointer value);
+gboolean g_tree_remove (GTree *tree, gconstpointer key);
+gpointer g_tree_lookup (GTree *tree, gconstpointer key);
+\end{lstlisting}
+
+Functions for manipulating the contents of the tree are shown in Listing~\ref{glib-treemanip}. All very straightforward; \lstinline{g_tree_insert()} overwrites any existing value, so if you don't use \lstinline{g_tree_new_full()}, be careful if the existing value is your only pointer to a chunk of allocated memory. If \lstinline{g_tree_lookup()} fails to find the key, it returns \lstinline{NULL}, otherwise it returns the associated value. Both keys and values have type \lstinline{gpointer} or \lstinline{gconstpointer}, but the \lstinline{GPOINTER_TO_INT()} and \lstinline{GPOINTER_TO_UINT()} macros allow you to use integers instead.
+
+\begin{lstlisting}[float, caption={Determining the size of a \lstinline{GTree}}, label=glib-treesize]
+#include <glib.h>
+
+gint g_tree_nnodes (GTree *tree);
+gint g_tree_height (GTree *tree);
+\end{lstlisting}
+
+There are two functions which give you an idea how large the tree is, shown in Listing~\ref{glib-treesize}.
+
+\begin{lstlisting}[float, caption={Traversing a \lstinline{GTree}}, label=glib-treetraverse]
+#include <glib.h>
+
+typedef gboolean (* GTraverseFunc) (gpointer key,
+                                    gpointer value,
+                                    gpointer data);
+
+void g_tree_foreach (GTree *tree, GTraverseFunc func, gpointer user_data);
+\end{lstlisting}
+
+Using \lstinline{g_tree_foreach()} (Listing~\ref{glib-treetraverse}) you can walk the entire tree. To use it, you provide a \lstinline{GTraverseFunc}, which is passed each key-value pair and a \lstinline{data} argument you give to \lstinline{g_tree_foreach()}. Traversal continues as long as the \lstinline{GTraverseFunc} returns \lstinline{FALSE}; if it ever returns \lstinline{TRUE} then traversal stops. You can use this to search the tree by \emph{value}.
+
+\subsubsection{GNode}
+
+\begin{lstlisting}[float, caption={\lstinline{GNode} cell}, label=glib-nodecell]
+typedef struct _GNode GNode;
+
+struct _GNode
+{
+  gpointer data;
+  GNode *next;
+  GNode *prev;
+  GNode *parent;
+  GNode *children;
+};
+\end{lstlisting}
+
+A \lstinline{GNode} is an N-ary tree, implemented as a doubly linked list with parent and child lists. Thus, most list operations have analogues in the \lstinline{GNode} API. You can walk the tree in various ways. Listing~\ref{glib-nodecell} shows the declaration for a node.
+
+\begin{lstlisting}[float, caption={Accessing \lstinline{GNode}}, label=glib-nodeaccess]
+#include <glib.h>
+
+g_node_prev_sibling (node);
+g_node_next_sibling (node);
+g_node_first_child (node);
+\end{lstlisting}
+
+There are macros to access \lstinline{GNode} members, shown in Listing~\ref{glib-nodeaccess}. As with \lstinline{GList}, the \lstinline{data} member is intended to be used directly. These macros return the \lstinline{next}, \lstinline{prev}, and \lstinline{children} members respectively; they also check whether their argument is \lstinline{NULL} before dereferencing it, and return \lstinline{NULL} if it is.
+
+\begin{lstlisting}[float, caption={Creating a \lstinline{GNode}}, label=glib-nodenew]
+#include <glib.h>
+
+GNode * g_node_new (gpointer data);
+\end{lstlisting}
+
+To create a node, the usual \lstinline{_new()} function is provided (Listing~\ref{glib-nodenew}). \lstinline{g_node_new()} creates a childless and parentless node containing \lstinline{data}. Typically \lstinline{g_node_new()} is used only to create the root node; convenience macros are provided which automatically create new nodes as needed.
+
+\begin{lstlisting}[float, caption={Building a \lstinline{GNode} tree}, label=glib-nodebuild]
+#include <glib.h>
+
+GNode * g_node_insert (GNode *parent, gint position, GNode *node);
+GNode * g_node_insert_before (GNode *parent, GNode *sibling, GNode *node);
+GNode * g_node_prepend (GNode *parent, GNode *node);
+\end{lstlisting}
+
+To build a tree the fundamental operations shown in Listing~\ref{glib-nodebuild} are used. Each operation returns the just-added node, for convenience when writing loops or recursing the tree. Unlike \lstinline{GList}, it is safe to ignore the return value.
+
+\begin{lstlisting}[float, caption={Building a \lstinline{GNode}}, label=glib-nodeconv]
+#include <glib.h>
+
+g_node_append (parent, node);
+g_node_insert_data (parent, position, data);
+g_node_insert_data_before (parent, sibling, data);
+g_node_prepend_data (parent, data);
+g_node_append_data (parent, data);
+\end{lstlisting}
+
+The convenience macros shown in Listing~\ref{glib-nodeconv} are implemented in terms of the fundamental operations. \lstinline{g_node_append()} is analagous to \lstinline{g_node_prepend()}; the rest take a \lstinline{data} argument, automatically allocate a node for it, and call the corresponding basic operation.
+
+\begin{lstlisting}[float, caption={Destroying a \lstinline{GNode}}, label=glib-nodedestroy]
+#include <glib.h>
+
+void g_node_destroy (GNode *root);
+void g_node_unlink (GNode *node);
+\end{lstlisting}
+
+To remove a node from the tree, there are two functions shown in Listing~\ref{glib-nodedestroy}. \lstinline{g_node_destroy()} removes the node from a tree, destroying it and all its children. \lstinline{g_node_unlink()} removes a node and makes it into a root node; i.e., it converts a subtree into an independent tree.
+
+\begin{lstlisting}[float, caption={Predicates for \lstinline{GNode}}, label=glib-nodeextrema]
+#include <glib.h>
+
+G_NODE_IS_ROOT (node);
+G_NODE_IS_LEAF (node);
+\end{lstlisting}
+
+There are two macros for detecting the top and bottom of a \lstinline{GNode} tree, shown in Listing~\ref{glib-nodeextrema}. A root node is defined as a node with no parent or siblings. A leaf node has no children.
+
+\begin{lstlisting}[float, caption={\lstinline{GNode} properties}, label=glib-nodeproperties]
+#include <glib.h>
+
+guint g_node_n_nodes (GNode *root, GTraverseFlags flags);
+GNode * g_node_get_root (GNode *node);
+gboolean g_node_is_ancestor (GNode *node, GNode *descendant);
+guint g_node_depth (GNode *node);
+GNode * g_node_find (GNode *root,
+                     GTraverseType order,
+                     GTraverseFlags flags,
+                     gpointer data);
+\end{lstlisting}
+
+You can ask GLib to report useful information about a \lstinline{GNode}, including the number of nodes it contains, its root node, its depth, and the node containing a particular data pointer. These functions are shown in Listing~\ref{glib-nodeproperties}.
+
+\lstinline{GTraverseType} is an enumeration; there are four possible values. Here are their meanings:
+\begin{itemize}
+  \item \lstinline{G_PRE_ORDER} visits the current node, then recurses each child in turn.
+
+  \item \lstinline{G_POST_ORDER} recurses each child in order, then visits the current node.
+
+  \item \lstinline{G_IN_ORDER} first recurses the leftmost child of the node, then visits the node itself, then recurses the rest of the node's children. This isn't very useful; mostly it is intended for use with a binary tree.
+
+  \item \lstinline{G_LEVEL_ORDER} first visits the node itself; then each of the node's children; then the children of the children; then the children of the children of the children; and so on. That is, it visits each node of depth 0, then each node of depth 1, then each node of depth 2, etc.
+\end{itemize}
+
+\lstinline{GNode}'s tree-traversal functions have a \lstinline{GTraverseFlags} argument. This is a bitfield used to change the nature of the traversal. Currently there are only three flags -- you can visit only leaf nodes, only non-leaf nodes, or all nodes:
+\begin{itemize}
+  \item \lstinline{G_TRAVERSE_LEAVES} means to traverse only leaf nodes.
+  \item \lstinline{G_TRAVERSE_NON_LEAVES} means to traverse only non-leaf nodes.
+  \item \lstinline{G_TRAVERSE_ALL} is simply a shortcut for\\
+    \lstinline{(G_TRAVERSE_LEAVES | G_TRAVERSE_NON_LEAVES)}.
+\end{itemize}
+
+\begin{lstlisting}[float, caption={Accessing a \lstinline{GNode}}, label=glib-nodeaccessors]
+#include <glib.h>
+
+typedef gboolean (* GNodeTraverseFunc) (GNode *node, gpointer data);
+typedef void (* GNodeForeachFunc) (GNode *node, gpointer data);
+
+void g_node_traverse (GNode *root,
+                      GTraverseType order,
+                      GTraverseFlags flags,
+                      gint max_depth,
+                      GNodeTraverseFunc func,
+                      gpointer data);
+
+void g_node_children_foreach (GNode *node,
+                              GTraverseFlags flags,
+                              GNodeForeachFunc func,
+                              gpointer data);
+
+guint g_node_max_height (GNode *root);
+void g_node_reverse_children (GNode *node);
+guint g_node_n_children (GNode *node);
+gint g_node_child_position (GNode *node, GNode *child);
+GNode * g_node_nth_child (GNode *node, guint n);
+GNode * g_node_last_child (GNode *node);
+\end{lstlisting}
+
+Listing~\ref{glib-nodeaccessors} shows some of the remaining \lstinline{GNode} functions. They are straightforward; most of them are simply operations on the node's list of children. There are two function typedefs unique to \lstinline{GNode}: \lstinline{GNodeTraverseFunc} and \lstinline{GNodeForeachFunc}. These are called with a pointer to the node being visited, and the user data you provide. A \lstinline{GNodeTraverseFunc} can return \lstinline{TRUE} to stop whatever traversal is in progress; thus you can use \lstinline{g_node_traverse()} to search the tree by value.
+
 % \subsection{Hash Tables}
 %
 % \section{Other Features}
