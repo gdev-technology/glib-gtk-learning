@@ -762,4 +762,45 @@ gboolean g_hash_table_lookup_extended (GHashTable *hash_table,
                                        gpointer *value);
 \end{lstlisting}
 
-% \section{Other Features}
+\section{Other Features}
+
+There simply isn't space to cover all of GLib's features in this book. It's worth looking at GLib whenever you find yourself thinking, ``There really \emph{should} be a function that...''. This section lists other features GLib provides, but is \emph{not} exhaustive.
+
+Some core application support not already mentioned:
+\begin{itemize}
+  \item A generic event loop abstraction, used to implement GTK+'s event loop.
+  \item A portable threads abstraction.
+  \item Asynchronous communication between threads.
+  \item \lstinline{GError} -- an error reporting system, similar to exceptions in other languages.
+  \item The \lstinline{g_log()} facility, allows you to print warnings, messages, etc. with configurable log levels and pluggable print routines.
+\end{itemize}
+
+Utilities:
+\begin{itemize}
+  \item A commandline option parser.
+  \item A unit-test framework.
+  \item A timer facility.
+  \item Calendrical/date-arithmetic functions.
+  \item Filename manipulation, such as \lstinline{g_path_get_basename()} and \lstinline{g_path_is_absolute()}.
+  \item A simple XML parser.
+  \item Perl-compatible regular expressions.
+\end{itemize}
+
+A selection of smaller utilities:
+\begin{itemize}
+  \item \lstinline{G_MAXFLOAT}, etc. equivalents for many numeric types.
+  \item Byte-order conversions.
+  \item \lstinline{G_DIR_SEPARATOR} handles Windows/Unix differences.
+  \item Convenience/portability routines to get the user's home directory, get the name of a \texttt{/tmp} directory, and similar tasks.
+  \item \lstinline{G_VA_COPY} copies a \lstinline{va_list} in a portable way.
+  \item Numerous macros to permit the use of compiler extensions (especially GCC extensions) in a portable way.
+  \item Bitfield manipulation.
+  \item Portable \lstinline{g_htonl()} and other host-to-network conversions.
+\end{itemize}
+
+And last, but not least, other interesting data types:
+\begin{itemize}
+  \item Enhanced string and array classes. Pointer and byte arrays.
+  \item \lstinline{GQuark} -- two way mapping from strings to integer identifiers.
+  \item \lstinline{GVariant} -- a variant data type that stores a value along with information about the type of that value.
+\end{itemize}
