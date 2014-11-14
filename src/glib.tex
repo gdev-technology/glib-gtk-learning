@@ -708,6 +708,58 @@ GNode * g_node_last_child (GNode *node);
 
 Listing~\ref{glib-nodeaccessors} shows some of the remaining \lstinline{GNode} functions. They are straightforward; most of them are simply operations on the node's list of children. There are two function typedefs unique to \lstinline{GNode}: \lstinline{GNodeTraverseFunc} and \lstinline{GNodeForeachFunc}. These are called with a pointer to the node being visited, and the user data you provide. A \lstinline{GNodeTraverseFunc} can return \lstinline{TRUE} to stop whatever traversal is in progress; thus you can use \lstinline{g_node_traverse()} to search the tree by value.
 
-% \subsection{Hash Tables}
-%
+\subsection{Hash Tables}
+
+\lstinline{GHashTable} is a simple hash table implementation, providing an associative array with constant-time lookups. To create and destroy a \lstinline{GHashTable}, use a constructor and destructor listed in Listing~\ref{glib-hashnew}. You must provide a \lstinline{GHashFunc}, which should return a positive integer when passed a hash key. Each returned \lstinline{guint} (modulus the size of the table) corresponds to a ``slot'' or ``bucket'' in the hash; \lstinline{GHashTable} handles collisions by storing a linked list of key-value pairs in each slot. Thus, the \lstinline{guint} values returned by your \lstinline{GHashFunc} must be fairly evenly distributed over the set of possible \lstinline{guint} values, or the hash table will degenerate into a linked list. Your \lstinline{GHashFunc} must also be fast, since it is used for every lookup.
+
+In addition to \lstinline{GHashFunc}, a \lstinline{GEqualFunc} is required to test keys for equality. It's used to find the correct key-value pair when hash collisions result in more than one pair in the same hash slot.
+
+If you use the basic constructor \lstinline{g_hash_table_new()}, remember that GLib has no way of knowing how to destroy the data contained in your hash table; it only destroys the table itself. If the keys and values need to be freed, use \lstinline{g_hash_table_new_full()}, the destroy functions will be called on each keys and values before destroying the hash table.
+
+\begin{lstlisting}[float, caption={\lstinline{GHashTable} constructors and destructor}, label=glib-hashnew]
+#include <glib.h>
+
+typedef guint (* GHashFunc) (gconstpointer key);
+typedef gboolean (* GEqualFunc) (gconstpointer a, gconstpointer b);
+typedef void (* GDestroyNotify) (gpointer data);
+
+GHashTable * g_hash_table_new (GHashFunc hash_func, GEqualFunc key_equal_func);
+
+GHashTable * g_hash_table_new_full (GHashFunc hash_func,
+                                    GEqualFunc key_equal_func,
+                                    GDestroyNotify key_destroy_func,
+                                    GDestroyNotify value_destroy_func);
+
+void g_hash_table_destroy (GHashTable *hash_table);
+\end{lstlisting}
+
+Ready-to-use hash and comparison functions are provided for common keys: integers, pointers, strings, and other GLib types. The most common are listed in Listing~\ref{glib-hashfuncs}. The functions for integers accept a pointer to a \lstinline{gint}, rather than the \lstinline{gint} itself. If you pass \lstinline{NULL} as the hash function argument to \lstinline{g_hash_table_new()}, \lstinline{g_direct_hash()} is used by default. If you pass \lstinline{NULL} as the key equality function, then simple pointer comparison is used (equivalent to \lstinline{g_direct_equal()}, but without a function call).
+
+\begin{lstlisting}[float, caption={Pre-written hashes/comparisons}, label=glib-hashfuncs]
+#include <glib.h>
+
+guint g_int_hash (gconstpointer key);
+gboolean g_int_equal (gconstpointer key1, gconstpointer key2);
+guint g_direct_hash (gconstpointer key);
+gboolean g_direct_equal (gconstpointer key1, gconstpointer key2);
+guint g_str_hash (gconstpointer key);
+gboolean g_str_equal (gconstpointer key1, gconstpointer key2);
+\end{lstlisting}
+
+Manipulating the hash table is simple. The routines are summarized in Listing~\ref{glib-hashmanip}. Insertions do \emph{not} copy the key or value; these are entered into the table exactly as you provide them, replacing any pre-existing key-value pair with the same key (``same'' is defined by your hash and equality functions, remember). If this is a problem, you must do a lookup or remove before you insert. Be especially careful if you dynamically allocate keys or values. If you have provided \lstinline{GDestroyNotify} functions, those will be called automatically on the old key-value pair before replacing it.
+
+The simple \lstinline{g_hash_table_lookup()} returns the value it finds associated with \lstinline{key}, or \lstinline{NULL} if there is no value. Sometimes this won't do. For example, \lstinline{NULL} may be a valid value in itself. If you're using strings as keys, especially dynamically allocated strings, knowing that a key is in the table might not be enough; you might want to retrieve the exact \lstinline{gchar *} the hash table is using to represent key \lstinline{"foo"}. A second lookup function is provided for cases like these. \lstinline{g_hash_table_lookup_extended()} returns \lstinline{TRUE} if the lookup succeeded; if it returns \lstinline{TRUE}, it places the key and value it found in the locations it's given.
+
+\begin{lstlisting}[float, caption={Manipulating a \lstinline{GHashTable}}, label=glib-hashmanip]
+#include <glib.h>
+
+gboolean g_hash_table_insert (GHashTable *hash_table, gpointer key, gpointer value);
+gboolean g_hash_table_remove (GHashTable *hash_table, gconstpointer key);
+gpointer g_hash_table_lookup (GHashTable *hash_table, gconstpointer key);
+gboolean g_hash_table_lookup_extended (GHashTable *hash_table,
+                                       gconstpointer lookup_key,
+                                       gpointer *orig_key,
+                                       gpointer *value);
+\end{lstlisting}
+
 % \section{Other Features}
