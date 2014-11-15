@@ -214,8 +214,6 @@ g_new0 (type, count);
 g_renew (type, mem, count);
 \end{lstlisting}
 
-%TODO explain GSlice
-
 \subsection{String Handling}
 
 GLib provides a number of functions for string handling; some are unique to GLib, and some solve portability concerns. They all interoperate nicely with the GLib memory allocation routines.
@@ -774,6 +772,7 @@ Some core application support not already mentioned:
   \item Asynchronous communication between threads.
   \item \lstinline{GError} -- an error reporting system, similar to exceptions in other languages.
   \item The \lstinline{g_log()} facility, allows you to print warnings, messages, etc. with configurable log levels and pluggable print routines.
+  \item The \lstinline{g_slice} functions to allocate efficiently equal-sized pieces of memory.
 \end{itemize}
 
 Utilities:
