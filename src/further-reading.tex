@@ -1,0 +1,50 @@
+\chapter{Further Reading}
+\label{further-reading}
+
+Now that you're familiar with the GLib core library, what are the next steps? As the Learning Path section explained (section~\ref{intro-learning-path} p.~\pageref{intro-learning-path}), the logical follow-up is GObject $\rightarrow$ GIO $\rightarrow$ and finally GTK+.
+
+\section{GObject, GIO and GTK+}
+
+The GObject reference documentation contains introductory chapters: ``Concepts'' and ``Tutorial'', available at:\\
+\url{https://developer.gnome.org/gobject/stable/}
+
+Knowing the basic concepts of GObject is important for \emph{using} a GObject class, like a GTK+ widget, but also for \emph{creating} your own GObject classes. Praising object-oriented programming versus action-oriented programming is out of scope for this book (\emph{Object-Oriented Design Heuristics} \cite{oop-book} has a good discussion on this topic), but the C language in itself permits to write basic object-oriented code, with the attributes contained in a structure. The \emph{self} is simply a pointer to an ``instance'' of your structure that you pass as the first argument of each function. Without following this style of coding, you'll see yourself adding global variables here and there, and in a matter of months your codebase will become an headache to evolve and maintain. GObject goes several steps further into object-oriented programming, with inheritance, interfaces, virtual functions, etc. But GObject simplifies also the event-driven programming paradigm, with signals and properties (a property is basically an attribute with a notify signal when its value changes). It is therefore recommended to create GObject classes for writing a GLib/GTK+ application. Don't be afraid by the boilerplate code (e.g. the macros definitions), there are tools and scripts to generate the boilerplate.
+
+Once you've learned GLib core and GObject, you should be able to use any GObject class in GIO, just read the class description and skim through the list of functions to have an overview of what features a class provides. Interesting stuff in GIO includes:
+\begin{itemize}
+  \item \lstinline{GFile} to handle files and directories.
+  \item \lstinline{GSettings} to store application settings.
+  \item \lstinline{GDBus} -- a high-level API for the D-Bus inter-process communication system.
+  \item \lstinline{GSubprocess} for launching child processes and communicate with them asynchronously.
+  \item \lstinline{GCancellable}, \lstinline{GAsyncResult} and \lstinline{GTask} for asynchronous and cancellable tasks.
+  \item Many other features, like I/O streams, network support or application support.
+\end{itemize}
+
+For building graphical applications with GTK+, don't panic, the reference documentation has a Getting Started guide (under the first chapter ``GTK+ Overview''), available with devhelp or online at:\\
+\url{https://developer.gnome.org/gtk3/stable/}
+
+After reading the Getting Started guide, skim the whole API reference to get familiar with the available widgets, containers and base classes. Some widgets have a quite large API, so a few external tutorials are also available, for example for \lstinline{GtkTextView} and \lstinline{GtkTreeView}. See the documentation page on:\\
+\url{http://www.gtk.org}
+
+As an advice, follow the GNOME code conventions, for the indentation, aligning parameters on the parenthesis, the source tree structure, etc. If every program has different code conventions, it's a nightmare for someone willing to contribute. See this wiki page:\\
+\url{https://wiki.gnome.org/Projects/GTK+/BestPractices}
+
+\section{Autotools}
+
+A Makefile is generally not sufficient if you want to install your application on different systems. The Autotools (Autoconf, Automake and Libtool) is what GNOME softwares use. There are some macros available for e.g. the user documentation, code coverage statistics for unit tests, etc. The most recent book on the subject is \emph{Autotools}, by John~Calcote \cite{autotools}.
+
+\section{Programming Best-Practices}
+
+This section is a bit unrelated to GLib/GTK+ development, but is useful for any programming project. After having some practice, it is interesting to learn more about programming best-practices. Writing code of good quality is important for preventing bugs and for maintaining a software in the long-term.
+
+\begin{itemize}
+  \item \emph{The} book on programming best-practices is \emph{Code Complete}, by Steve~McConnell \cite{code-complete}. Highly recommended.
+
+  \item For guidelines about OOP specifically, see \emph{Object-Oriented Design Heuristics}, by Arthur~Riel \cite{oop-book}.
+
+  \item An excellent source of information is the website of Martin~Fowler: refactoring, agile methodology, code design, ...\\
+  \url{http://martinfowler.com/}
+\end{itemize}
+
+More related to GNOME, read Havoc~Pennington's articles, including ``Working on Free Software'', ``Free software UI'', ``Free Software Maintenance: Adding Features'':\\
+\url{http://ometer.com/writing.html}
