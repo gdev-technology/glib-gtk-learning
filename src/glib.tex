@@ -26,7 +26,6 @@ GLib provides substitutes for many standard and commonly-used C language constru
 
 Rather than using C's standard types (\lstinline{int}, \lstinline{long}, etc.) GLib defines its own. These serve a variety of purposes. For example, \lstinline{gint32} is guaranteed to be 32 bits wide, something no standard C type can ensure. \lstinline{guint} is simply easier to type than \lstinline{unsigned}. A few of the typedefs exist only for consistency; for example, \lstinline{gchar} is always equivalent to the standard \lstinline{char}.
 
-%TODO add gsize, since it's used later in this chapter
 The most important primitive types defined by GLib:
 \begin{itemize}
   \item \lstinline{gint8}, \lstinline{guint8}, \lstinline{gint16}, \lstinline{guint16}, \lstinline{gint32}, \lstinline{guint32}, \lstinline{gint64}, \lstinline{guint64} --- these give you integers of a guaranteed size. (If it isn't obvious, the \lstinline{guint} types are unsigned, the \lstinline{gint} types are signed.)
@@ -36,6 +35,8 @@ The most important primitive types defined by GLib:
   \item \lstinline{gchar}, \lstinline{gshort}, \lstinline{glong}, \lstinline{gint}, \lstinline{gfloat}, \lstinline{gdouble} are purely cosmetic.
 
   \item \lstinline{gpointer} may be more convenient to type than \lstinline{void *}. \lstinline{gconstpointer} gives you \lstinline{const void *}. (\lstinline{const gpointer} will \emph{not} do what you typically mean it to; spend some time with a good book on C if you don't see why.)
+
+  \item \lstinline{gsize} is an unsigned integer type that can hold the result of the \lstinline{sizeof} operator.
 \end{itemize}
 
 \subsection{Frequently Used Macros}
