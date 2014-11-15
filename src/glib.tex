@@ -90,7 +90,9 @@ g_return_if_fail (condition);
 g_return_val_if_fail (condition, return_value);
 \end{lstlisting}
 
-Listing~\ref{glib-precondition} shows GLib's precondition checks. \lstinline{g_return_if_fail()} prints a warning and immediately returns from the current function if \lstinline{condition} is \lstinline{FALSE}. \lstinline{g_return_val_if_fail()} is similar but allows you to return some \lstinline{return_value}. These macros are incredibly useful -- if you use them liberally, especially in combination with GObject's runtime type checking (see chapter~\ref{gobject}), you'll halve the time you spend looking for bad pointers and type errors.
+%TODO add gobject chapter reference when the chapter is written
+Listing~\ref{glib-precondition} shows GLib's precondition checks. \lstinline{g_return_if_fail()} prints a warning and immediately returns from the current function if \lstinline{condition} is \lstinline{FALSE}. \lstinline{g_return_val_if_fail()} is similar but allows you to return some \lstinline{return_value}. These macros are incredibly useful -- if you use them liberally, especially in combination with GObject's runtime type checking, %(see chapter~\ref{gobject})
+you'll halve the time you spend looking for bad pointers and type errors.
 
 Using these functions is simple; here's an example from the GLib hash table implementation:
 \begin{lstlisting}
