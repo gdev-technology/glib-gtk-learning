@@ -1,4 +1,4 @@
-\chapter{GLib, the core library}
+\chapter{GLib, the Core Library}
 \label{glib}
 
 GLib is the low-level core library that forms the basis for projects such as GTK+ and GNOME. It provides data structures, utility functions, portability wrappers, and other essential functionality such as an event loop and threads. GLib is available on most Unix-like systems and Windows.
@@ -25,7 +25,7 @@ GLib provides substitutes for many standard and commonly-used C language constru
 
 \subsection{Type Definitions}
 
-Rather than using C's standard types (\lstinline{int}, \lstinline{long}, etc.) GLib defines its own. These serve a variety of purposes. For example, \lstinline{gint32} is guaranteed to be 32 bits wide, something no standard C type can ensure. \lstinline{guint} is simply easier to type than \lstinline{unsigned}. A few of the typedefs exist only for consistency; for example, \lstinline{gchar} is always equivalent to the standard \lstinline{char}.
+Rather than using C's standard types (\lstinline{int}, \lstinline{long}, etc.) GLib defines its own. These serve a variety of purposes. For example, \lstinline{gint32} is guaranteed to be 32 bits wide, something no standard C89 type can ensure. \lstinline{guint} is simply easier to type than \lstinline{unsigned}. A few of the typedefs exist only for consistency; for example, \lstinline{gchar} is always equivalent to the standard \lstinline{char}.
 
 The most important primitive types defined by GLib:
 \begin{itemize}
@@ -42,7 +42,7 @@ The most important primitive types defined by GLib:
 
 \subsection{Frequently Used Macros}
 
-GLib defines a number of familiar macros used in many C programs, shown in Listing~\ref{glib-simplemacros}. All of these should be self-explanatory. \lstinline{MIN()}/\lstinline{MAX()} return the smaller or larger of their arguments. \lstinline{ABS()} returns the absolute value of its argument. \lstinline{CLAMP(x, low, high)} means \lstinline{x}, unless \lstinline{x} is outside the range [\lstinline{low},~\lstinline{high}]; if \lstinline{x} is below the range, \lstinline{low} is returned; if \lstinline{x} is above the range, \lstinline{high} is returned. In addition to the macros shown in Listing~\ref{glib-simplemacros}, \lstinline{TRUE}/\lstinline{FALSE}/\lstinline{NULL} are defined as the usual \lstinline{1}/\lstinline{0}/\lstinline{((void*)0)}.
+GLib defines a number of familiar macros used in many C programs, shown in Listing~\ref{glib-simplemacros}. All of these should be self-explanatory. \lstinline{MIN()}/\lstinline{MAX()} return the smaller or larger of their arguments. \lstinline{ABS()} returns the absolute value of its argument. \lstinline{CLAMP(x, low, high)} means \lstinline{x}, unless \lstinline{x} is outside the range [\lstinline{low},~\lstinline{high}]; if \lstinline{x} is below the range, \lstinline{low} is returned; if \lstinline{x} is above the range, \lstinline{high} is returned. In addition to the macros shown in Listing~\ref{glib-simplemacros}, \lstinline{TRUE}/\lstinline{FALSE}/\lstinline{NULL} are defined as the usual \lstinline{1}/\lstinline{0}/\lstinline{((void *)0)}.
 
 \begin{lstlisting}[float, caption={Familiar C Macros}, label=glib-simplemacros]
 #include <glib.h>
@@ -390,6 +390,7 @@ list = NULL;
 
 Constructing a list using \lstinline{g_slist_append()} is a \emph{terrible} idea; use \lstinline{g_slist_prepend()} and then call \lstinline{g_slist_reverse()} if you need items in a particular order. If you anticipate frequently appending to a list, you can also keep a pointer to the last element. The following code can be used to perform efficient appends\footnote{A more convenient way is to use the \lstinline{GQueue} data type: a double-ended queue that keeps a pointer to the head, a pointer to the tail, and the length of the doubly linked list.}:
 
+\pagebreak[2]
 \begin{lstlisting}
 void
 efficient_append (GSList   **list,
