@@ -521,6 +521,7 @@ There are two different kinds of tree in GLib; \lstinline{GTree} is your basic b
 
 \subsubsection{GTree}
 
+%FIXME talk about g_tree_ref() and g_tree_unref()? Those functions are often better than g_tree_destroy(), but it needs a bit of explanation on memory management with reference counting. The same applies for GHashTable.
 \begin{lstlisting}[float, caption={Creating and destroying balanced binary trees}, label=glib-treeconstruct]
 #include <glib.h>
 
