@@ -7,3 +7,6 @@ License: Creative Commons BY SA (see the text for more details).
 To compile the document:
 $ cd src/
 $ latexmk -pdf main.tex
+
+A PDF is available at:
+https://people.gnome.org/~swilmet/glib-gtk-dev-platform.pdf
