@@ -22,7 +22,7 @@ Some sections are based on the book \emph{GTK+/Gnome Application Development}, b
 
 \section{What is GLib and GTK+?}
 
-Roughly speaking, GLib is a set of libraries: GLib core, GObject and GIO.
+Roughly speaking, GLib is a set of libraries: GLib core, GObject and GIO. Those three libraries are developed in the same Git repository called \emph{glib}, so when referring to ``GLib'', it can either mean ``GLib core'' or the broader set including also GObject and GIO.
 
 GLib core provides data structure handling for C (linked lists, trees, hash tables, …), portability wrappers, an event loop, threads, dynamic loading of modules and lots of utility functions.
 
@@ -33,6 +33,10 @@ GIO -- which depends on GLib core and GObject -- provides high-level APIs for in
 The GLib libraries can be used to write operating system services, libraries, command line utilities and such like. GLib offers higher-level APIs than the POSIX standard, it is therefore more comfortable to write a C program with GLib.
 
 GTK+ is a widget toolkit based on GLib that can be used to develop applications with a graphical user interface (GUI). The first version of GTK+, or the GIMP Tool Kit\footnote{The name ``The GIMP Tool Kit'' is now rarely used, today it is more commonly known as GTK+ for short.}, was mainly written by Peter~Mattis in 1996 for the GIMP (GNU Image Manipulation Program), but has quickly become a general-purpose library. The ``+'' has been added later to distinguish between the original version and a new version that added object oriented features. GLib started as part of GTK+, but is now a standalone library.
+
+The GLib and GTK+ APIs are documented with GTK-Doc. Special comments are written in the source code, and GTK-Doc extracts those comments to generate HTML pages.
+
+Although GLib and GTK+ are written in C, language bindings are available for JavaScript, Python, Perl and many other programming languages. At the beginning, manual bindings were created, which needed to be updated each time the API of the library changed. Nowadays the language bindings are generic and are thus automatically updated when, for example, new functions are added. This is thanks to GObject Introspection. Special annotations are added to the GTK-Doc comments, to expose more information than what the C syntax can provide, for example about ownership transfer of dynamically-allocated content\footnote{For example, whether you need to free the return value.}. Any C library with GObject Introspection support is thus available from many programming languages.
 
 GLib and GTK+ are part of the GNU Project, whose overall goal is developing a free operating system (named GNU) plus applications to go with it. GNU stands for ``GNU's Not Unix'', a humorous way of saying that the GNU operating system is Unix-compatible. You can learn more about GNU at \url{https://www.gnu.org}.
 
