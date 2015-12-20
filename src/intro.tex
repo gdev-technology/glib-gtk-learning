@@ -82,7 +82,7 @@ Each frontend should be a ``view'' and a ``controller.'' As a ``view,'' the fron
 
 There are many ways to discipline yourself to keep your application separated. A couple of useful ideas:
 \begin{itemize}
-  \item Write the backend as a library. At the beginning the library can be internal to the application and statically linked, without API/ABI stability guarantees. When the project grows up, and if the code is useful for other programs, you can turn easily your backend into a real library.
+  \item Write the backend as a library. At the beginning the library can be internal to the application and statically linked, without API/ABI stability guarantees. When the project grows up, and if the code is useful for other programs, you can turn easily your backend into a shared library.
   \item Write at least two frontends from the start; one or both can be ugly prototypes, you just want to get an idea how to structure the backend. Remember, frontends should be easy; the backend has the hard parts.
 \end{itemize}
 
