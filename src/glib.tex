@@ -205,7 +205,7 @@ It's important to match \lstinline{g_malloc()} with \lstinline{g_free()}, plain 
 Of course there's a \lstinline{g_realloc()} equivalent to \lstinline{realloc()}. There's also a convenient \lstinline{g_malloc0()} which fills allocated memory with 0s, and \lstinline{g_memdup()} which returns a copy of \lstinline{n_bytes} bytes starting at \lstinline{mem}. \lstinline{g_realloc()} and \lstinline{g_malloc0()} will both accept a size of 0, for consistency with \lstinline{g_malloc()}. However, \lstinline{g_memdup()} will not.
 
 %TODO mention this in the API doc
-If it isn't obvious: \lstinline{g_malloc0()} fills raw memory with unset bits, not the value 0 for whatever type you intend to put there. Occasionally someone expects to get an array of floating point numbers initialized to 0.0; this will \emph{not} work.
+If it isn't obvious: \lstinline{g_malloc0()} fills raw memory with unset bits, not the value 0 for whatever type you intend to put there. Occasionally someone expects to get an array of floating point numbers initialized to 0.0; this is \emph{not} guaranteed to work portably.
 
 Finally, there are type-aware allocation macros, shown in Listing~\ref{glib-g_new}. The \lstinline{type} argument to each of these is the name of a type, and the \lstinline{count} argument is the number of \lstinline{type}-size blocks to allocate. These macros save you some typing and multiplication, and are thus less error-prone. They automatically cast to the target pointer type, so attempting to assign the allocated memory to the wrong kind of pointer should trigger a compiler warning. (If you have warnings turned on, as a responsible programmer should!)
 
