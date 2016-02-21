@@ -1,4 +1,107 @@
 \chapter{Object-Oriented Programming in C}
 \label{gobject}
 
-Although the C language is not object-oriented, it is possible to write ``semi-object-oriented'' C code easily, and the GObject library provides more advanced Object-Oriented Programming (OOP) features such as interfaces, virtual functions, inheritance. Beyond OOP, GObject provides a powerful signal system, which belongs more to the Event-Driven Programming paradigm.
+Although the C language is not object-oriented, it is possible to write ``semi-object-oriented'' C code easily, and the GObject library provides more advanced Object-Oriented Programming (OOP) features such as interfaces, virtual functions and inheritance.
+
+%FIXME talk about the GObject signal system? Observer pattern, event-driven programming.
+
+\section{Semi-Object-Oriented Programming in C}
+
+It was explained in the previous chapter that the GLib core library uses a semi-object-oriented coding style. This section explains what it means, and how to write your own code with this coding style.
+
+One of the main ideas of OOP is to \emph{keep related data and behavior in one place}\footnote{This is one of the guidelines taken from the book \emph{Object-Oriented Design Heuristics} \cite{oop-book}.}. In C, the data is stored in a \lstinline{struct}, and the behavior is implemented with functions. To keep those in one place, we put them in the same *.c file, with the public functions present in the corresponding *.h file (the header).
+
+Another important idea of OOP is to \emph{hide all data within its class}. In C, it means that the \lstinline{struct} full declaration should be present only in the *.c file, and the header contains only a \lstinline{typedef}. How the data is stored in the class and which data structure is used for the various computations should remain an implementation detail. A user of the class should not be aware of the implementation details, it should instead rely only on the external interface, that is, what is present in the header. That way, the class implementation can change without affecting the users of the class.
+
+\subsection{Header Example}
+
+The Listing~\ref{gobject-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK+ application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
+
+\lstinputlisting[float, caption={myapp-spell-checker.h}, label=gobject-spell-checker-h]{code/myapp-spell-checker.h}
+
+\subsubsection{Namespace}
+The first thing to note is the use of the namespace ``Myapp''. Each symbol in the header is prefixed by the namespace.
+
+It is a good practice to choose a namespace for your code, to avoid symbol conflicts at link time. It is especially important to have a namespace for a library, but it is also better to have one for an application. Of course the namespace needs to be unique for each codebase; for instance you must \emph{not} re-use the ``g'' or ``gtk'' namespaces for your application or library!
+
+\subsubsection{Lowercase, Uppercase or CamelCase?}
+Depending on the symbol type, its name is either in uppercase, lowercase or CamelCase. The convention in the GLib world is uppercase letters for a \lstinline{#define}, CamelCase for a \lstinline{struct} or \lstinline{enum}, and lowercase for functions and variables.
+
+\subsubsection{Include Guard}
+The header contains the typical include guard:
+
+\begin{lstlisting}
+#ifndef MYAPP_SPELL_CHECKER_H
+#define MYAPP_SPELL_CHECKER_H
+
+/* ... */
+
+#endif /* MYAPP_SPELL_CHECKER_H */
+\end{lstlisting}
+
+It permits to protect the header from being included several times in the same *.c file.
+
+\subsubsection{C++ Support}
+The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to be included from C++ code. It is more important for a library, but it is also a good practice to add those macros in application code too, even if the application doesn't use C++. That way an application class could be moved to a library easily (if the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros are missing, it can be hard to notice). And the application could be migrated incrementally to C++ more smoothly.
+
+\subsubsection{\#include}
+\label{gobject-include-in-header}
+There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require to include another header beforehand.
+
+\texttt{myapp-spell-checker.h} contains the following \lstinline{#include}:
+\begin{lstlisting}
+#include <glib.h>
+\end{lstlisting}
+
+Because \texttt{glib.h} is needed for the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros, for the GLib basic type definitions (\lstinline{gchar}, \lstinline{gboolean}, etc) and \lstinline{GSList}.
+
+If the \lstinline{#include} in \texttt{myapp-spell-checker.h} is removed, each *.c file that includes \texttt{myapp-spell-checker.h} would also need to include \texttt{glib.h} beforehand, otherwise the compiler would not be able to compile that *.c file. But we don't want to add such requirement for the users of the class.
+
+\subsubsection{Type Definition}
+The \lstinline{MyappSpellChecker} type is defined as follows:
+
+\begin{lstlisting}
+typedef struct _MyappSpellChecker MyappSpellChecker;
+\end{lstlisting}
+
+The \lstinline{struct _MyappSpellChecker} will be declared in the \texttt{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …).
+
+\subsubsection{Object Constructor}
+\lstinline{myapp_spell_checker_new()} is the constructor of the class. It takes a language code parameter ---~for example \lstinline{"en_US"}~--- and returns an \emph{instance} of the class, also called an \emph{object}. What the function does is simply to allocate dynamically the \lstinline{struct} and return the pointer. That return value is then used as the first parameter of the remaining functions of the class. In some languages like Python, that first parameter is called the \emph{self} parameter, since it references ``itself'', i.e. its own class. Other object-oriented languages such as Java and C++ have the \emph{this} keyword to access the object data.
+
+%TODO explain new() (allocation on the heap) vs init() (allocation on the stack) and give an example with init(). But the example requires also the *.c code, so it's maybe better to add the explanation in a later subsection.
+
+\subsubsection{Object Destructor}
+\lstinline{myapp_spell_checker_free()} is the destructor of the class. It destroys an object by freeing its memory.
+
+%TODO add "we'll see later reference counting".
+
+\subsubsection{Other Public Functions}
+The \lstinline{myapp_spell_checker_check_word()} and \lstinline{myapp_spell_checker_get_suggestions()} functions are the available features of the class. It checks whether a word is correctly spelled, and get a list of suggestions to fix a misspelled word.
+
+\lstinline{gssize} is a GLib integer type that can hold ---~for instance~--- the result of \lstinline{strlen()}, and can also hold a negative value since ---~contrary to \lstinline{gsize}~--- \lstinline{gssize} is a \emph{signed} integer type. The \lstinline{word_length} parameter can be \lstinline{-1} if the string is nul-terminated, that is, if the string is terminated by the special character \lstinline{'\0'}. The purpose of the \lstinline{word_length} parameter is to be able to pass a pointer to a word that belongs to a larger string, without the need to call for example \lstinline{g_strndup()}.
+
+\subsection{The Corresponding *.c File}
+
+Let's now look at the \texttt{myapp-spell-checker.c} file:
+
+\vspace{0.7cm}
+\lstinputlisting[caption={myapp-spell-checker.c}, label=gobject-spell-checker-c]{code/myapp-spell-checker.c}
+
+\subsubsection{Order of \#include's}
+At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \texttt{config.h} file, in that case you should \emph{first} include \texttt{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \texttt{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \texttt{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{gobject-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
+
+Also, since \texttt{glib.h} is already included in \texttt{myapp-spell-checker.h}, there is no need to include it a second time in \texttt{myapp-spell-checker.c}.
+
+\subsubsection{GTK-Doc Comments}
+The functions are documented with GTK-Doc comments. A GTK-Doc comment begins with \lstinline{/**}, with the name of the symbol to document on the next line. When we refer to a symbol, there is a special syntax to use depending on the symbol type:
+\begin{itemize}
+  \item A function parameter is prefixed by \lstinline{@}.
+  \item The \emph{name} of a \lstinline{struct} or \lstinline{enum} is prefixed by \lstinline{#}.
+  \item A constant ---~for example an \lstinline{enum} \emph{value}~--- is prefixed by \lstinline{%}.
+  \item A function is suffixed by \lstinline{()}.
+\end{itemize}
+
+GTK-Doc can parse those special comments and generate HTML pages that can then be easily navigated by an API browser like Devhelp. But the specially-formatted comments in the code are not the only thing that GTK-Doc needs, it also needs integration to the build system of your project (for example the Autotools), alongside some other files to list the different pages, describe the general structure with the list of symbols and optionally provide additional content written in the DocBook XML format. Those files are usually present in the \path{docs/reference/} directory.
+
+Describing in detail how to integrate GTK-Doc support in your code is beyond the scope of this book. For that, you should refer to the GTK-Doc manual~\cite{gtk-doc}.
