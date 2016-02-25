@@ -119,7 +119,14 @@ That said, if (1) you're not comfortable in C, (2) you're already proficient wit
 
 Normally this section should be named ``Structure of the Book'', but as you can see the book is far from finished, so instead the section is named ``Learning Path''.
 
-The logical learning path is GLib $\rightarrow$ GObject $\rightarrow$ GIO $\rightarrow$ GTK+, since GObject is based on GLib, GIO is based on GLib and GObject, and GTK+ is based on the three previous libraries. Some tutorials dive directly into GTK+, so after a short period of time you can display a window with some text and three buttons; it's fun, but knowing GLib and GObject is not luxury if you want to understand what you're doing, and a realistic GTK+ application uses extensively the GLib libraries.
+The logical learning path is:
+\begin{enumerate}
+  \item The bases of GLib core;
+  \item The bases of GObject;
+  \item GTK+ and GIO in parallel.
+\end{enumerate}
+
+Since GTK+ is based on GLib and GObject, it is better to understand the bases of those two libraries first. Some tutorials dive directly into GTK+, so after a short period of time you can display a window with some text and three buttons; it's fun, but knowing GLib and GObject is not luxury if you want to understand what you're doing, and a realistic GTK+ application uses extensively the GLib libraries. GTK+ and GIO can be learned in parallel --- once you start using GTK+, you will see that some non-GUI parts are based on GIO.
 
 So this book begins with the GLib core library (chapter~\ref{glib} p.~\pageref{glib}) followed by a Further Reading chapter (p.~\pageref{further-reading}).
 
