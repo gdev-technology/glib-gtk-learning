@@ -76,7 +76,7 @@ This book assumes that you already have some programming practice. Here is a lis
 
 \section{Why and When Using the C Language?}
 
-The GLib and GTK+ libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject. For example Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}} is a new programming language based on GObject. JavaScript and Python are also supported, among other languages. So why and when choosing the C language? For writing a daemon on a Unix system, C is the \emph{de facto} language. But it is less obvious for an application; so let's first look at how to structure an application codebase.
+The GLib and GTK+ libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject. Official GNOME bindings are available for the following languages: C++, JavaScript, Perl, Python and Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}}. Vala is a new programming language based on GObject which integrates the peculiarities of GObject directly in its C\#-like syntax. Beyond the official GNOME bindings, GLib and GTK+ can be used in more than a dozen other programming languages, with a varying level of support. So why and when choosing the C language? For writing a daemon on a Unix system, C is the \emph{de facto} language. But it is less obvious for an application. To answer the question, let's first look at how to structure an application codebase.
 
 % Adapted from a FAQ question in GGAD.
 \subsection{Separate the Backend from the Frontend}
