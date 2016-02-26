@@ -182,7 +182,7 @@ GLib wraps the standard \lstinline{malloc()} and \lstinline{free()} with its own
 These are nice in several small ways:
 
 \begin{itemize}
-  \item \lstinline{g_malloc()} always returns a \lstinline{gpointer}, never a \lstinline{char *}, so there's no need to cast the return value.
+  \item \lstinline{g_malloc()} always returns a \lstinline{gpointer}, never a \lstinline{char *}, so there's no need to cast the return value\footnote{Before the ANSI/ISO C standard, the \lstinline{void *} generic pointer type didn't exist, and \lstinline{malloc()} returned a \lstinline{char *} value. Nowadays \lstinline{malloc()} returns a \lstinline{void *} type ---~which is the same as \lstinline{gpointer}~--- and \lstinline{void *} allows implicit pointer conversions in C. Casting the return value of \lstinline{malloc()} is needed if: the developer wants to support old compilers; or if the developer thinks that an explicit conversion makes the code clearer; or if a C++ compiler is used, because in C++ a cast from the \lstinline{void *} type is required.}.
 
   \item \lstinline{g_malloc()} aborts the program if the underlying \lstinline{malloc()} fails, so you don't have to check for a \lstinline{NULL} return value.
 
