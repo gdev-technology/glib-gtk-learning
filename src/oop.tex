@@ -1,5 +1,5 @@
 \chapter{Object-Oriented Programming in C}
-\label{gobject}
+\label{oop}
 
 Although the C language is not object-oriented, it is possible to write ``semi-object-oriented'' C code easily, and the GObject library provides more advanced Object-Oriented Programming (OOP) features such as interfaces, virtual functions and inheritance.
 
@@ -15,9 +15,9 @@ Another important idea of OOP is to \emph{hide all data within its class}. In C,
 
 \subsection{Header Example}
 
-The Listing~\ref{gobject-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK+ application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
+The Listing~\ref{oop-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK+ application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
 
-\lstinputlisting[float, caption={myapp-spell-checker.h}, label=gobject-spell-checker-h]{code/myapp-spell-checker.h}
+\lstinputlisting[float, caption={myapp-spell-checker.h}, label=oop-spell-checker-h]{code/myapp-spell-checker.h}
 
 \subsubsection{Namespace}
 The first thing to note is the use of the namespace ``Myapp''. Each symbol in the header is prefixed by the namespace.
@@ -45,7 +45,7 @@ It permits to protect the header from being included several times in the same *
 The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to be included from C++ code. It is more important for a library, but it is also a good practice to add those macros in application code too, even if the application doesn't use C++. That way an application class could be moved to a library easily (if the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros are missing, it can be hard to notice). And the application could be migrated incrementally to C++ more smoothly.
 
 \subsubsection{\#include}
-\label{gobject-include-in-header}
+\label{oop-include-in-header}
 There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require to include another header beforehand.
 
 \path{myapp-spell-checker.h} contains the following \lstinline{#include}:
@@ -86,10 +86,10 @@ The \lstinline{myapp_spell_checker_check_word()} and \lstinline{myapp_spell_chec
 Let's now look at the \path{myapp-spell-checker.c} file:
 
 \vspace{0.7cm}
-\lstinputlisting[caption={myapp-spell-checker.c}, label=gobject-spell-checker-c]{code/myapp-spell-checker.c}
+\lstinputlisting[caption={myapp-spell-checker.c}, label=oop-spell-checker-c]{code/myapp-spell-checker.c}
 
 \subsubsection{Order of \#include's}
-At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \path{config.h} file, in that case you should \emph{first} include \path{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \path{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \path{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{gobject-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
+At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \path{config.h} file, in that case you should \emph{first} include \path{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \path{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \path{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{oop-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
 
 Also, since \path{glib.h} is already included in \path{myapp-spell-checker.h}, there is no need to include it a second time in \path{myapp-spell-checker.c}.
 
