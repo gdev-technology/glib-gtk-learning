@@ -48,14 +48,14 @@ The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to
 \label{gobject-include-in-header}
 There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require to include another header beforehand.
 
-\texttt{myapp-spell-checker.h} contains the following \lstinline{#include}:
+\path{myapp-spell-checker.h} contains the following \lstinline{#include}:
 \begin{lstlisting}
 #include <glib.h>
 \end{lstlisting}
 
-Because \texttt{glib.h} is needed for the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros, for the GLib basic type definitions (\lstinline{gchar}, \lstinline{gboolean}, etc) and \lstinline{GSList}.
+Because \path{glib.h} is needed for the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros, for the GLib basic type definitions (\lstinline{gchar}, \lstinline{gboolean}, etc) and \lstinline{GSList}.
 
-If the \lstinline{#include} in \texttt{myapp-spell-checker.h} is removed, each *.c file that includes \texttt{myapp-spell-checker.h} would also need to include \texttt{glib.h} beforehand, otherwise the compiler would not be able to compile that *.c file. But we don't want to add such requirement for the users of the class.
+If the \lstinline{#include} in \path{myapp-spell-checker.h} is removed, each *.c file that includes \path{myapp-spell-checker.h} would also need to include \path{glib.h} beforehand, otherwise the compiler would not be able to compile that *.c file. But we don't want to add such requirement for the users of the class.
 
 \subsubsection{Type Definition}
 The \lstinline{MyappSpellChecker} type is defined as follows:
@@ -64,7 +64,7 @@ The \lstinline{MyappSpellChecker} type is defined as follows:
 typedef struct _MyappSpellChecker MyappSpellChecker;
 \end{lstlisting}
 
-The \lstinline{struct _MyappSpellChecker} will be declared in the \texttt{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …).
+The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …).
 
 \subsubsection{Object Constructor}
 \lstinline{myapp_spell_checker_new()} is the constructor of the class. It takes a language code parameter ---~for example \lstinline{"en_US"}~--- and returns an \emph{instance} of the class, also called an \emph{object}. What the function does is simply to allocate dynamically the \lstinline{struct} and return the pointer. That return value is then used as the first parameter of the remaining functions of the class. In some languages like Python, that first parameter is called the \emph{self} parameter, since it references ``itself'', i.e. its own class. Other object-oriented languages such as Java and C++ have the \emph{this} keyword to access the object data.
@@ -83,15 +83,15 @@ The \lstinline{myapp_spell_checker_check_word()} and \lstinline{myapp_spell_chec
 
 \subsection{The Corresponding *.c File}
 
-Let's now look at the \texttt{myapp-spell-checker.c} file:
+Let's now look at the \path{myapp-spell-checker.c} file:
 
 \vspace{0.7cm}
 \lstinputlisting[caption={myapp-spell-checker.c}, label=gobject-spell-checker-c]{code/myapp-spell-checker.c}
 
 \subsubsection{Order of \#include's}
-At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \texttt{config.h} file, in that case you should \emph{first} include \texttt{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \texttt{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \texttt{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{gobject-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
+At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \path{config.h} file, in that case you should \emph{first} include \path{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \path{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \path{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{gobject-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
 
-Also, since \texttt{glib.h} is already included in \texttt{myapp-spell-checker.h}, there is no need to include it a second time in \texttt{myapp-spell-checker.c}.
+Also, since \path{glib.h} is already included in \path{myapp-spell-checker.h}, there is no need to include it a second time in \path{myapp-spell-checker.c}.
 
 \subsubsection{GTK-Doc Comments}
 The functions are documented with GTK-Doc comments. A GTK-Doc comment begins with \lstinline{/**}, with the name of the symbol to document on the next line. When we refer to a symbol, there is a special syntax to use depending on the symbol type:

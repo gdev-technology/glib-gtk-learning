@@ -9,11 +9,11 @@ GLib's various facilities are intended to have a consistent interface; the codin
 
 GLib has a few toplevel headers:
 \begin{itemize}
-  \item \header{glib.h}, the main header;
-  \item \header{gmodule.h} for dynamic loading of modules;
-  \item \header{glib-unix.h} for Unix-specific APIs;
-  \item \header{glib/gi18n.h} and \header{glib/gi18n-lib.h} for internationalization;
-  \item \header{glib/gprintf.h} and \header{glib/gstdio.h} to avoid pulling in all of stdio.
+  \item \path{glib.h}, the main header;
+  \item \path{gmodule.h} for dynamic loading of modules;
+  \item \path{glib-unix.h} for Unix-specific APIs;
+  \item \path{glib/gi18n.h} and \path{glib/gi18n-lib.h} for internationalization;
+  \item \path{glib/gprintf.h} and \path{glib/gstdio.h} to avoid pulling in all of stdio.
 \end{itemize}
 
 \bigskip
@@ -272,7 +272,7 @@ const gchar * g_strerror (gint errnum);
 const gchar * g_strsignal (gint signum);
 \end{lstlisting}
 
-Listing~\ref{glib-strformats} shows a few more semi-standard functions GLib wraps. \lstinline{g_strtod} is like \lstinline{strtod()} -- it converts string \lstinline{nptr} to a double -- with the exception that it will also attempt to convert the double in the \texttt{"C"} locale if it fails to convert it in the user's default locale. \lstinline{*endptr} is set to the first unconverted character, i.e. any text after the number representation. If conversion fails, \lstinline{*endptr} is set to \lstinline{nptr}. \lstinline{endptr} may be \lstinline{NULL}, causing it to be ignored.
+Listing~\ref{glib-strformats} shows a few more semi-standard functions GLib wraps. \lstinline{g_strtod} is like \lstinline{strtod()} -- it converts string \lstinline{nptr} to a double -- with the exception that it will also attempt to convert the double in the \lstinline{"C"} locale if it fails to convert it in the user's default locale. \lstinline{*endptr} is set to the first unconverted character, i.e. any text after the number representation. If conversion fails, \lstinline{*endptr} is set to \lstinline{nptr}. \lstinline{endptr} may be \lstinline{NULL}, causing it to be ignored.
 
 \lstinline{g_strerror()} and \lstinline{g_strsignal()} are like their non-\lstinline{g_} equivalents, but portable. (They return a string representation for an \lstinline{errno} or a signal number.)
 
@@ -324,7 +324,7 @@ gchar *element = g_strdup ("a string");
 list = g_slist_append (list, element);
 \end{lstlisting}
 
-GLib lists have a noticeable Lisp influence; the empty list is a special ``nil'' value for that reason. \lstinline{g_slist_prepend()} works much like \texttt{cons} -- it's a constant-time operation ($O(1)$) that adds a new cell to the front of the list.
+GLib lists have a noticeable Lisp influence; the empty list is a special ``nil'' value for that reason. \lstinline{g_slist_prepend()} works much like \lstinline[language=Lisp]{cons} -- it's a constant-time operation ($O(1)$) that adds a new cell to the front of the list.
 
 \begin{lstlisting}[float, caption={Changing linked list contents}, label=glib-listchanging]
 #include <glib.h>
@@ -872,7 +872,7 @@ A selection of smaller utilities:
   \item \lstinline{G_MAXFLOAT}, etc. equivalents for many numeric types.
   \item Byte-order conversions.
   \item \lstinline{G_DIR_SEPARATOR} handles Windows/Unix differences.
-  \item Convenience/portability routines to get the user's home directory, get the name of a \texttt{/tmp} directory, and similar tasks.
+  \item Convenience/portability routines to get the user's home directory, get the name of a \path{/tmp} directory, and similar tasks.
   \item \lstinline{G_VA_COPY} copies a \lstinline{va_list} in a portable way.
   \item Numerous macros to permit the use of compiler extensions (especially GCC extensions) in a portable way.
   \item Bitfield manipulation.
