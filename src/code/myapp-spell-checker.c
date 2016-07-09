@@ -10,6 +10,12 @@ struct _MyappSpellChecker
    */
 };
 
+static void
+load_dictionary (MyappSpellChecker *checker)
+{
+  /* ... */
+};
+
 /**
  * myapp_spell_checker_new:
  * @language_code: the language code to use.
@@ -26,6 +32,8 @@ myapp_spell_checker_new (const gchar *language_code)
 
   checker = g_new0 (MyappSpellChecker, 1);
   checker->language_code = g_strdup (language_code);
+
+  load_dictionary (checker);
 
   return checker;
 }

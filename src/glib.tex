@@ -79,6 +79,7 @@ printf ("We are storing %d\n", GPOINTER_TO_INT (my_pointer));
 Be careful, though; these macros allow you to store an integer in a pointer, but storing a pointer in an integer will \emph{not} work. To do that portably, you must store the pointer in a \lstinline{long}. (It's undoubtedly a bad idea to do so, however.)
 
 \subsection{Debugging Macros}
+\label{glib-debugging-macros}
 
 GLib has a nice set of macros you can use to enforce invariants and preconditions in your code. GTK+ uses these liberally -- one of the reasons it's so stable and easy to use. They all disappear when you define \lstinline{G_DISABLE_CHECKS} or \lstinline{G_DISABLE_ASSERT}, so there's no performance penalty in production code. Using these liberally is a very, very good idea. You'll find bugs much faster if you do. You can even add assertions and checks whenever you find a bug to be sure the bug doesn't reappear in future versions -- this complements a regression suite. Checks are especially useful when the code you're writing will be used as a black box by other programmers; users will immediately know when and how they've misused your code.
 
