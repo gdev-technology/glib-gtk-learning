@@ -1,16 +1,12 @@
 \chapter{Further Reading}
 \label{further-reading}
 
-Now that you're familiar with the GLib core library, what are the next steps? As the Learning Path section explained (section~\ref{intro-learning-path} p.~\pageref{intro-learning-path}), the logical follow-up is GObject and then GTK+ and GIO in parallel.
+At this point you should know the bases of GLib core and GObject. You don't need to know \emph{everything} about GLib core and GObject to continue, but having at least a basic understanding will allow you to more easily learn GTK+ and GIO, or any other GObject-based library for that matter.
 
-\section{GObject, GIO and GTK+}
+\section{GTK+ and GIO}
+GTK+ and GIO can be learned in parallel.
 
-The GObject reference documentation contains introductory chapters: ``Concepts'' and ``Tutorial'', available at:\\
-\url{https://developer.gnome.org/gobject/stable/}
-
-Knowing the basic concepts of GObject is important for \emph{using} a GObject class, like a GTK+ widget, but also for \emph{creating} your own GObject classes. Praising object-oriented programming versus action-oriented programming is out of scope for this book (\emph{Object-Oriented Design Heuristics} \cite{oop-book} has a good discussion on this topic), but the C language in itself permits to write basic object-oriented code, with the attributes contained in a structure. The \emph{self} is simply a pointer to an ``instance'' of your structure that you pass as the first argument of each function. Without following this style of coding, you'll see yourself adding global variables here and there, and in a matter of months your codebase will become an headache to evolve and maintain. GObject goes several steps further into object-oriented programming, with inheritance, interfaces, virtual functions, etc. But GObject simplifies also the event-driven programming paradigm, with signals and properties (a property is basically an attribute with a notify signal when its value changes). It is therefore recommended to create GObject classes for writing a GLib/GTK+ application. Don't be afraid by the boilerplate code (e.g. the macros definitions), there are tools and scripts to generate the boilerplate.
-
-Once you've learned GLib core and GObject, you should be able to use any GObject class in GIO, just read the class description and skim through the list of functions to have an overview of what features a class provides. Interesting stuff in GIO includes:
+You should be able to use any GObject class in GIO, just read the class description and skim through the list of functions to have an overview of what features a class provides. Among other interesting things, GIO includes:
 \begin{itemize}
   \item \lstinline{GFile} to handle files and directories.
   \item \lstinline{GSettings} to store application settings.
