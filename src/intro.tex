@@ -153,9 +153,6 @@ For using GLib and GTK+ as a developer, there are several solutions:
 
 To read the API documentation of GLib and GTK+, Devhelp is a handy application, if you have installed the \texttt{-dev} or \texttt{-doc} package. For the text editor or IDE, there are many choices (and a source of many trolls): Vim, Emacs, gedit, Anjuta, MonoDevelop/Xamarin Studio, Geany, … A promising specialized IDE for GNOME is Builder, currently in development. For building graphically GUIs with GTK+, Glade is a useful application. Finally, GTK-Doc is used for writing API documentation and add the GObject Introspection annotations.
 
-% FIXME this paragraph should maybe be moved to a Best Practices section or chapter.
-As a side note, writing an API documentation for internal code can be useful too: when the codebase becomes bigger, it is a great help -- especially for newcomers -- to have an overview of the available classes. The documentation in general (for the API but also other comments that describe implementation details) should not only explain \emph{how} to use a class or function (the \emph{how} can be guessed by reading the code, if good variable and function names are chosen), but also \emph{why} the class is useful (if it's not straightforward), and why it was written like that. The \emph{why} should at least be documented in the commit messages of your version control system, but having some comments in the code is also useful and have more chances to be read. But pay attention to update the comments when the code is modified, an outdated comment is worse than having no comments at all, so write the comments close to the related code (for the API, this is the case with GTK-Doc).
-
 When using GLib or GTK+, pay attention to not use deprecated APIs for newly-written code. Be sure that you read the latest documentations. They are also available online at:\\
 \url{https://developer.gnome.org/}
 

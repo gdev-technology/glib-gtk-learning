@@ -112,6 +112,8 @@ GTK-Doc can parse those special comments and generate HTML pages that can then b
 
 Describing in detail how to integrate GTK-Doc support in your code is beyond the scope of this book. For that, you should refer to the GTK-Doc manual~\cite{gtk-doc}.
 
+As a side note, writing an API documentation can be useful for an internal library too: when the codebase becomes bigger, it is a great help -- especially for newcomers -- to have an overview of the available classes. The documentation in general (for the API but also other comments that describe implementation details) should not only explain \emph{how} to use a class or function (the \emph{how} can be guessed by reading the code, if good variable and function names are chosen), but also \emph{why} the class is useful (if it's not straightforward), and why it was written like that. The \emph{why} should at least be documented in the commit messages of your version control system, but having some comments in the code is also useful and have more chances to be read. But pay attention to update the comments when the code is modified, an outdated comment is worse than having no comments at all, so write the comments close to the related code (for the API, this is the case with GTK-Doc).
+
 \subsubsection{GObject Introspection Annotations}
 The GTK-Doc comment for the \lstinline{myapp_spell_checker_get_suggestions()} function contains GObject Introspection annotations for the return value:
 \begin{lstlisting}
