@@ -1,0 +1,21 @@
+News in 0.4, 2016-07-05
+-----------------------
+* Intro: improve learning path
+* Intro: add Acknowledgments section
+* Small improvements here and there
+
+News in 0.3, 2016-02-08
+-----------------------
+* Intro: explain GTK-Doc and GObject Introspection
+* Further reading: link to HowDoI series
+* Small improvements here and there
+
+News in 0.2, 2015-05-22
+-----------------------
+* GLib: add section for the main event loop
+* Small improvements here and there
+
+News in 0.1, 2014-11-16
+-----------------------
+* First version, with an intro, a chapter on GLib and a Further Reading
+  chapter.
