@@ -9,4 +9,7 @@ $ cd src/
 $ latexmk -pdf main.tex
 
 A PDF is available at:
-https://people.gnome.org/~swilmet/glib-gtk-dev-platform.pdf
+https://people.gnome.org/~swilmet/download/download-glib-gtk-dev-platform.php
+(If you copy the link on another web page, please copy the *.php URL, not the
+direct PDF link, because the *.php page has a download counter, and I like to
+have statistics.)
