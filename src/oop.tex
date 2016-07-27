@@ -7,15 +7,15 @@ Every GTK+ widget is a subclass of the GObject base class. So knowing the basic 
 
 It is important to note that although the C language is not object-oriented, it is possible to write ``semi-object-oriented'' C code easily, without GObject. For learning purposes, that's what this chapter begins with. GObject is then easier to learn. What GObject adds is more features such as reference counting, inheritance, virtual functions, interfaces, signals and more.
 
-But why following an object-oriented style in the first place? An object-oriented code permits to avoid global variables. And if you have read any sort of programming best-practices guide, you know that you \emph{should}, if possible, avoid global variables\footnote{A global variable in C can be a \lstinline{static} variable declared at the top of a *.c file, that can thus be accessed from any function in that *.c file. This is sometimes useful, but should be avoided if possible. There is another kind of global variable in C: an \lstinline{extern} variable that can be accessed from any *.c file. The latter is much worse than the former.}. Because using global data makes the code harder to manage and understand, especially when a program becomes larger. It also makes the code more difficult to re-use. It is instead better to break a program into smaller, self-contained pieces, so that you can focus on only one part at a time.
+But why following an object-oriented style in the first place? An object-oriented code permits to avoid global variables. And if you have read any sort of programming best-practices guide, you know that you \emph{should}, if possible, avoid global variables\footnote{A global variable in C can be a \lstinline{static} variable declared at the top of a *.c file, that can thus be accessed from any function in that *.c file. This is sometimes useful, but should be avoided if possible. There is another kind of global variable in C: an \lstinline{extern} variable that can be accessed from any *.c file. The latter is much worse than the former.}. Because using global data makes the code harder to manage and understand, especially when a program becomes larger. It also makes the code more difficult to re-use. It is instead better to break a program into smaller, self-contained pieces, so that you can focus on only one part of the code at a time.
 
 \section{Semi-Object-Oriented Programming in C}
 
 It was explained in the previous chapter that the GLib core library uses a semi-object-oriented coding style. This section explains what it means, and how to write your own code with this coding style.
 
-One of the main ideas of OOP is to \emph{keep related data and behavior in one place}\footnote{This is one of the guidelines taken from the book \emph{Object-Oriented Design Heuristics} \cite{oop-book}.}. In C, the data is stored in a \lstinline{struct}, and the behavior is implemented with functions. To keep those in one place, we put them in the same *.c file, with the public functions present in the corresponding *.h file (the header).
+One of the main ideas of OOP is to \emph{keep related data and behavior in one place}\footnote{This is one of the guidelines discussed in \emph{Object-Oriented Design Heuristics} \cite{oop-book}.}. In C, the data is stored in a \lstinline{struct}, and the behavior is implemented with functions. To keep those in one place, we put them in the same *.c file, with the public functions present in the corresponding *.h file (the header).
 
-Another important idea of OOP is to \emph{hide all data within its class}. In C, it means that the \lstinline{struct} full declaration should be present only in the *.c file, and the header contains only a \lstinline{typedef}. How the data is stored in the class and which data structure is used for the various computations should remain an implementation detail. A user of the class should not be aware of the implementation details, it should instead rely only on the external interface, that is, what is present in the header. That way, the class implementation can change without affecting the users of the class.
+Another important idea of OOP is to \emph{hide all data within its class}. In C, it means that the \lstinline{struct} full declaration should be present only in the *.c file, while the header contains only a \lstinline{typedef}. How the data is stored within the class and which data structures are used should remain an implementation detail. A user of the class should not be aware of the implementation details, it should instead rely only on the external interface, that is, what is present in the header and the public documentation. That way, the implementation of the class can change without affecting the users of the class, as long as the API doesn't change.
 
 \subsection{Header Example}
 
@@ -30,7 +30,7 @@ The first thing to note is the use of the namespace ``Myapp''. Each symbol in th
 It is a good practice to choose a namespace for your code, to avoid symbol conflicts at link time. It is especially important to have a namespace for a library, but it is also better to have one for an application. Of course the namespace needs to be unique for each codebase; for instance you must \emph{not} re-use the ``g'' or ``gtk'' namespaces for your application or library!
 
 \subsubsection{Class Namespace}
-Additionally, there is a second namespace with the class name, here ``SpellChecker''. That way, the name of a symbol is more predictable.
+Additionally, there is a second namespace with the class name, here ``SpellChecker''. If you follow that convention consistently, the name of a symbol is more predictable, which makes the API easier to work with.
 
 \subsubsection{Lowercase, Uppercase or CamelCase?}
 Depending on the symbol type, its name is either in uppercase, lowercase or CamelCase. The convention in the GLib world is:
@@ -55,7 +55,7 @@ The header contains the typical include guard:
 It permits to protect the header from being included several times in the same *.c file.
 
 \subsubsection{C++ Support}
-The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to be included from C++ code. It is more important for a library, but it is also a good practice to add those macros in application code too, even if the application doesn't use C++. That way an application class could be moved to a library easily (if the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros are missing, it can be hard to notice). And if the desire arises, the application could be ported to C++ incrementally.
+The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to be included from C++ code. It is more important for a library, but it is also a good practice to add those macros in application code too, even if the application doesn't use C++. That way an application class could be moved to a library easily (it can be hard to notice that the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros are missing). And if the desire arises, the application could be ported to C++ incrementally.
 
 \subsubsection{\#include}
 \label{oop-include-in-header}
@@ -77,7 +77,7 @@ The \lstinline{MyappSpellChecker} type is defined as follows:
 typedef struct _MyappSpellChecker MyappSpellChecker;
 \end{lstlisting}
 
-The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …).
+The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …). But remember: \emph{premature optimization is the root of all evil} (Donald~Knuth).
 
 \subsubsection{Object Constructor}
 \lstinline{myapp_spell_checker_new()} is the constructor of the class. It takes a language code parameter ---~for example \lstinline{"en_US"}~--- and returns an \emph{instance} of the class, also called an \emph{object}. What the function does is simply to allocate dynamically the \lstinline{struct} and return the pointer. That return value is then used as the first parameter of the remaining functions of the class. In some languages like Python, that first parameter is called the \emph{self} parameter, since it references ``itself'', i.e. its own class. Other object-oriented languages such as Java and C++ have the \emph{this} keyword to access the object data.
