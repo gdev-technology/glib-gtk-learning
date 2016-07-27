@@ -84,6 +84,8 @@ The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-sp
 
 %TODO explain new() (allocation on the heap) vs init() (allocation on the stack) and give an example with init(). But the example requires also the *.c code, so it's maybe better to add the explanation in a later subsection.
 
+%TODO explain that we can create _several_ instances of the class. Big difference with storing the data in static variables declared at the top of the *.c file.
+
 \subsubsection{Object Destructor}
 \lstinline{myapp_spell_checker_free()} is the destructor of the class. It destroys an object by freeing its memory and releasing other allocated resources.
 
@@ -117,6 +119,7 @@ GTK-Doc can parse those special comments and generate HTML pages that can then b
 
 Describing in detail how to integrate GTK-Doc support in your code is beyond the scope of this book. For that, you should refer to the GTK-Doc manual~\cite{gtk-doc}.
 
+%FIXME: rework this, a bit out of place.
 As a side note, writing an API documentation can be useful for an internal library too: when the codebase becomes bigger, it is a great help -- especially for newcomers -- to have an overview of the available classes. The documentation in general (for the API but also other comments that describe implementation details) should not only explain \emph{how} to use a class or function (the \emph{how} can be guessed by reading the code, if good variable and function names are chosen), but also \emph{why} the class is useful (if it's not straightforward), and why it was written like that. The \emph{why} should at least be documented in the commit messages of your version control system, but having some comments in the code is also useful and have more chances to be read. But pay attention to update the comments when the code is modified, an outdated comment is worse than having no comments at all, so write the comments close to the related code (for the API, this is the case with GTK-Doc).
 
 \subsubsection{GObject Introspection Annotations}
@@ -155,6 +158,9 @@ Each public function checks its preconditions with the \lstinline{g_return_if_fa
 Note that the \lstinline{g_return} macros should be used only for the entry points of a class, that is, in its public functions. You can usually assume that the parameters passed to a \lstinline{static} function are valid, especially the \emph{self} parameter. It is though sometimes useful to check an argument of a \lstinline{static} function with \lstinline{g_assert()}, to make the code more robust and self-documented.
 
 \subsubsection{Coding Style}
+%TODO show code snippets: bad example vs good example
+%TODO for a function _call_, also align parameters on the parenthesis if the line would be too long if all the parameters are on the same line.
+%TODO find definition of MyappSpellChecker type -> search _MyappSpellChecker.
 
 Finally, it is worth explaining a few things about the coding style. You are encouraged to use early on the same coding style for your project, because it can be something difficult to change afterwards. If every program has different code conventions, it's a nightmare for someone willing to contribute.
 
