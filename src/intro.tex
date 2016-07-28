@@ -80,6 +80,7 @@ The GLib and GTK+ libraries can be used by other programming languages than C. T
 
 % Adapted from a FAQ question in GGAD.
 \subsection{Separate the Backend from the Frontend}
+\label{intro-backend-frontend-separation}
 A good practice is to separate the graphical user interface from the rest of the application. For a variety of reasons, an application's graphical interface tends to be an exceptionally volatile and ever-changing piece of software. It's the focus of most user requests for change. It is difficult to plan and execute well the first time around -- often you will discover that some aspect of it is unpleasant to use only after you have written it. Having several different user interfaces is sometimes desirable, for example a command-line version, or a web-based interface.
 
 In practical terms, this means that any large application should have a radical separation between its various \emph{frontends}, or interfaces, and the \emph{backend}. The backend should contain all the ``hard parts'': your algorithms and data structures, the real work done by the application. Think of it as an abstract ``model'' being displayed to and manipulated by the user.
