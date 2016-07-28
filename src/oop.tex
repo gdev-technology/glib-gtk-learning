@@ -157,19 +157,49 @@ Each public function checks its preconditions with the \lstinline{g_return_if_fa
 Note that the \lstinline{g_return} macros should be used only for the entry points of a class, that is, in its public functions. You can usually assume that the parameters passed to a \lstinline{static} function are valid, especially the \emph{self} parameter. It is though sometimes useful to check an argument of a \lstinline{static} function with \lstinline{g_assert()}, to make the code more robust and self-documented.
 
 \subsubsection{Coding Style}
-%TODO show code snippets: bad example vs good example
-%TODO for a function _call_, also align parameters on the parenthesis if the line would be too long if all the parameters are on the same line.
-%TODO find definition of MyappSpellChecker type -> search _MyappSpellChecker.
-
 Finally, it is worth explaining a few things about the coding style. You are encouraged to use early on the same coding style for your project, because it can be something difficult to change afterwards. If every program has different code conventions, it's a nightmare for someone willing to contribute.
 
-See how the parameters of a function declaration are aligned: there is one parameter per line, with the type aligned on the opening parenthesis, and with the names aligned on the same column. Some text editors can be configured to do that automatically.
+Here is an example of a function definition:
+\begin{lstlisting}
+gboolean
+myapp_spell_checker_check_word (MyappSpellChecker *checker,
+                                const gchar       *word,
+                                gssize             word_length)
+{
+  /* ... */
+}
+\end{lstlisting}
 
-The return type of a function \emph{definition} is on the previous line than the function name, so that the function name is at the beginning of the line. When writing a function \emph{prototype}, the function name should never be at the beginning of a line, it should ideally be on the same line as the return type\footnote{In \path{myapp-spell-checker.h}, the function names are indented with two spaces instead of being on the same lines as the return types, because there is not enough horizontal place on the page.}. That way, you can do a regular expression search to find a function definition, for example with the \shellcmd{grep} shell command:
+See how the parameters are aligned: there is one parameter per line, with the type aligned on the opening parenthesis, and with the names aligned on the same column. Some text editors can be configured to do that automatically.
+
+For a function \emph{call}, if putting all the parameters on the same line results in a too long line, the parameters should also be aligned on the parenthesis, to make the code easier to read:
+\begin{lstlisting}
+  function_call (one_param,
+                 another_param,
+                 yet_another_param);
+\end{lstlisting}
+
+Unlike other projects like the Linux kernel, there is not really a limit on the line length. A GObject-based code can have quite lengthy lines, even if the parameters of a function are aligned on the parenthesis. Of course if a line ends at, say, column 120, it might mean that there are too many indentation levels and that you should extract the code into intermediate functions.
+
+The return type of a function \emph{definition} is on the previous line than the function name, so that the function name is at the beginning of the line. When writing a function \emph{prototype}, the function name should never be at the beginning of a line, it should ideally be on the same line as the return type\footnote{In \path{myapp-spell-checker.h}, the function names are indented with two spaces instead of being on the same lines as the return types, because there is not enough horizontal space on the page.}. That way, you can do a regular expression search to find the implementation of a function, for example with the \shellcmd{grep} shell command:
 
 \begin{lstlisting}[language=bash]
-$ grep -n -E "^function_name"
+$ grep -n -E "^function_name" *.c
 \end{lstlisting}
+
+Or, if the code is in a Git repository, it's a little more convenient to use \lstinline[language=bash]{git grep}:
+
+\begin{lstlisting}[language=bash]
+$ git grep -n -E "^function_name"
+\end{lstlisting}
+
+Likewise, to find a \lstinline{struct} declaration, you can search its name prefixed by an underscore. For example:
+
+\begin{lstlisting}[language=bash]
+$ git grep -n _MyappSpellChecker
+\end{lstlisting}
+
+This could also work for \lstinline{enum} types, but the underscore-prefix convention is not thoroughly followed for \lstinline{enum} types, although nothing prevents you from applying it to your project.
 
 To learn more about the coding style used in GLib, GTK+ and GNOME, read the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
 
