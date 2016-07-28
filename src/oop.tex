@@ -82,9 +82,9 @@ The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-sp
 \subsubsection{Object Constructor}
 \lstinline{myapp_spell_checker_new()} is the constructor of the class. It takes a language code parameter ---~for example \lstinline{"en_US"}~--- and returns an \emph{instance} of the class, also called an \emph{object}. What the function does is simply to allocate dynamically the \lstinline{struct} and return the pointer. That return value is then used as the first parameter of the remaining functions of the class. In some languages like Python, that first parameter is called the \emph{self} parameter, since it references ``itself'', i.e. its own class. Other object-oriented languages such as Java and C++ have the \emph{this} keyword to access the object data.
 
-%TODO explain new() (allocation on the heap) vs init() (allocation on the stack) and give an example with init(). But the example requires also the *.c code, so it's maybe better to add the explanation in a later subsection.
+Note that \lstinline{myapp_spell_checker_new()} can be called several times to create different objects. Each object holds its own data. That's the fundamental difference with global variables: if the data is stored in global variables, there can be at most one instance of it\footnote{Unless the global variable stores the ``objects'' in an aggregated data structure like an array, a linked list or a hash table, with an identifier as the ``\emph{self}'' parameter (e.g. an integer or a string) to access a specific element. But this is really ugly code, please don't do that!}.
 
-%TODO explain that we can create _several_ instances of the class. Big difference with storing the data in static variables declared at the top of the *.c file.
+%TODO explain new() (allocation on the heap) vs init() (allocation on the stack) and give an example with init(). But the example requires also the *.c code, so it's maybe better to add the explanation in a later subsection.
 
 \subsubsection{Object Destructor}
 \lstinline{myapp_spell_checker_free()} is the destructor of the class. It destroys an object by freeing its memory and releasing other allocated resources.
