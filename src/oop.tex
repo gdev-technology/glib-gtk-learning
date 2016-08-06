@@ -147,7 +147,7 @@ For a comprehensive list of GI annotations, see the GObject Introspection wiki~\
 \subsubsection{Static vs Non-Static Functions}
 In the example code, you can see that the \lstinline{load_dictionary()} function has been marked as \lstinline{static}. It is in fact a good practice in C to mark internal functions as \lstinline{static}. A \lstinline{static} function can be used only in the same *.c file. On the other hand, a public function should be non-static and have a prototype in a header.
 
-To ensure that code follows this convention, there is the \texttt{-Wmissing-prototypes} GCC warning option\footnote{When using the Autotools, there is the \texttt{AX\_COMPILER\_FLAGS} Autoconf macro that enables, among other things, that GCC flag.}.
+There is the \texttt{-Wmissing-prototypes} GCC warning option to ensure that a piece of code follows this convention\footnote{When using the Autotools, the \texttt{AX\_COMPILER\_FLAGS} Autoconf macro enables, among other things, that GCC flag.}.
 
 Also, contrarily to a public function, a \lstinline{static} function doesn't require to be prefixed by the project and class namespaces (here, \lstinline{myapp_spell_checker}).
 
