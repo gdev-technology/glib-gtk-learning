@@ -187,19 +187,31 @@ The return type of a function \emph{definition} is on the previous line than the
 $ grep -n -E "^function_name" *.c
 \end{lstlisting}
 
-Or, if the code is in a Git repository, it's a little more convenient to use \lstinline[language=bash]{git grep}:
+Or, if the code is inside a Git repository, it's a little more convenient to use \lstinline[language=bash]{git grep}:
 
 \begin{lstlisting}[language=bash]
 $ git grep -n -E "^function_name"
 \end{lstlisting}
 
-Likewise, to find a \lstinline{struct} declaration, you can search its name prefixed by an underscore. For example:
+Likewise, there is an easy way to find the declaration of a public \lstinline{struct}. The convention is to prefix the type name by an underscore when declaring the \lstinline{struct}. For example:
+\begin{lstlisting}
+/* In the header: */
+typedef struct _MyappSpellChecker MyappSpellChecker;
+
+/* In the *.c file: */
+struct _MyappSpellChecker
+{
+  /* ... */
+};
+\end{lstlisting}
+
+As a result, to find the full declaration of the \lstinline{MyappSpellChecker} type, you can search ``\lstinline{_MyappSpellChecker}'':
 
 \begin{lstlisting}[language=bash]
 $ git grep -n _MyappSpellChecker
 \end{lstlisting}
 
-This could also work for \lstinline{enum} types, but the underscore-prefix convention is not thoroughly followed for \lstinline{enum} types, although nothing prevents you from applying it to your project.
+In GLib/GTK+, this underscore-prefix convention is normally applied to every \lstinline{struct} that has a separate \lstinline{typedef} line. The convention is not thoroughly followed when a \lstinline{struct} is used in only one *.c file. And the convention is usually not followed for \lstinline{enum} types. However, for your project, nothing prevents you from applying consistently the underscore-prefix convention to all types.
 
 To learn more about the coding style used in GLib, GTK+ and GNOME, read the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
 
