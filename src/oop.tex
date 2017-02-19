@@ -1,5 +1,4 @@
 \part{Object-Oriented Programming in C}
-\chapter{Object-Oriented Programming in C}
 \label{oop}
 
 Now that you're familiar with the GLib core library, what is the next step? As the Learning Path section explained (section~\ref{intro-learning-path} p.~\pageref{intro-learning-path}), the logical follow-up is Object-Oriented Programming (OOP) in C and the basics of GObject.
@@ -10,7 +9,7 @@ It is important to note that although the C language is not object-oriented, it 
 
 But why following an object-oriented style in the first place? An object-oriented code permits to avoid global variables. And if you have read any sort of programming best-practices guide, you know that you \emph{should}, if possible, avoid global variables\footnote{A global variable in C can be a \lstinline{static} variable declared at the top of a *.c file, that can thus be accessed from any function in that *.c file. This is sometimes useful, but should be avoided if possible. There is another kind of global variable in C: an \lstinline{extern} variable that can be accessed from any *.c file. The latter is much worse than the former.}. Because using global data makes the code harder to manage and understand, especially when a program becomes larger. It also makes the code more difficult to re-use. It is instead better to break a program into smaller, self-contained pieces, so that you can focus on only one part of the code at a time.
 
-\section{Semi-Object-Oriented Programming in C}
+\chapter{Semi-Object-Oriented Programming in C}
 
 It was explained in the previous chapter that the GLib core library uses a semi-object-oriented coding style. This section explains what it means, and how to write your own code with this coding style.
 
@@ -18,22 +17,22 @@ One of the main ideas of OOP is to \emph{keep related data and behavior in one p
 
 Another important idea of OOP is to \emph{hide all data within its class}. In C, it means that the \lstinline{struct} full declaration should be present only in the *.c file, while the header contains only a \lstinline{typedef}. How the data is stored within the class and which data structures are used should remain an implementation detail. A user of the class should not be aware of the implementation details, it should instead rely only on the external interface, that is, what is present in the header and the public documentation. That way, the implementation of the class can change without affecting the users of the class, as long as the API doesn't change.
 
-\subsection{Header Example}
+\section{Header Example}
 
 The Listing~\ref{oop-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK+ application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
 
 \vspace{0.7cm}
 \lstinputlisting[caption={myapp-spell-checker.h}, label=oop-spell-checker-h]{code/myapp-spell-checker.h}
 
-\subsubsection{Project Namespace}
+\subsection{Project Namespace}
 The first thing to note is the use of the namespace ``Myapp''. Each symbol in the header is prefixed by the project namespace.
 
 It is a good practice to choose a namespace for your code, to avoid symbol conflicts at link time. It is especially important to have a namespace for a library, but it is also better to have one for an application. Of course the namespace needs to be unique for each codebase; for instance you must \emph{not} re-use the ``g'' or ``gtk'' namespaces for your application or library!
 
-\subsubsection{Class Namespace}
+\subsection{Class Namespace}
 Additionally, there is a second namespace with the class name, here ``SpellChecker''. If you follow that convention consistently, the name of a symbol is more predictable, which makes the API easier to work with.
 
-\subsubsection{Lowercase, Uppercase or CamelCase?}
+\subsection{Lowercase, Uppercase or CamelCase?}
 Depending on the symbol type, its name is either in uppercase, lowercase or CamelCase. The convention in the GLib world is:
 \begin{itemize}
   \item Uppercase letters for a constant, either for a \lstinline{#define} or an \lstinline{enum} value;
@@ -41,7 +40,7 @@ Depending on the symbol type, its name is either in uppercase, lowercase or Came
   \item Lowercase for functions, variables, \lstinline{struct} fields, …
 \end{itemize}
 
-\subsubsection{Include Guard}
+\subsection{Include Guard}
 The header contains the typical include guard:
 
 \begin{lstlisting}
@@ -55,10 +54,10 @@ The header contains the typical include guard:
 
 It protects the header from being included several times in the same *.c file.
 
-\subsubsection{C++ Support}
+\subsection{C++ Support}
 The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to be included from C++ code. It is more important for a library, but it is also a good practice to add those macros in application code too, even if the application doesn't use C++. That way an application class could be moved to a library easily (it can be hard to notice that the \lstinline{G_BEGIN_DECLS} and \lstinline{G_END_DECLS} macros are missing). And if the desire arises, the application could be ported to C++ incrementally.
 
-\subsubsection{\#include}
+\subsection{\#include}
 \label{oop-include-in-header}
 There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require including another header beforehand.
 
@@ -71,7 +70,7 @@ Because \path{glib.h} is needed for the \lstinline{G_BEGIN_DECLS} and \lstinline
 
 If the \lstinline{#include} in \path{myapp-spell-checker.h} is removed, each *.c file that includes \path{myapp-spell-checker.h} would also need to include \path{glib.h} beforehand, otherwise the compiler would not be able to compile that *.c file. But we don't want to add such requirement for the users of the class.
 
-\subsubsection{Type Definition}
+\subsection{Type Definition}
 The \lstinline{MyappSpellChecker} type is defined as follows:
 
 \begin{lstlisting}
@@ -80,34 +79,34 @@ typedef struct _MyappSpellChecker MyappSpellChecker;
 
 The \lstinline{struct _MyappSpellChecker} will be declared in the \path{myapp-spell-checker.c} file. When you use \lstinline{MyappSpellChecker} in another file, you should not need to know what the \lstinline{struct} contains, you should use the public functions of the class instead. The exception to that OOP best practice is when calling a function would be a performance problem, for example for low-level data structures used for computer graphics (coordinates, rectangles, …). But remember: \emph{premature optimization is the root of all evil} (Donald~Knuth).
 
-\subsubsection{Object Constructor}
+\subsection{Object Constructor}
 \lstinline{myapp_spell_checker_new()} is the constructor of the class. It takes a language code parameter ---~for example \lstinline{"en_US"}~--- and returns an \emph{instance} of the class, also called an \emph{object}. What the function does is simply to allocate dynamically the \lstinline{struct} and return the pointer. That return value is then used as the first parameter of the remaining functions of the class. In some languages like Python, that first parameter is called the \emph{self} parameter, since it references ``itself'', i.e. its own class. Other object-oriented languages such as Java and C++ have the \emph{this} keyword to access the object data.
 
 Note that \lstinline{myapp_spell_checker_new()} can be called several times to create different objects. Each object holds its own data. That's the fundamental difference with global variables: if the data is stored in global variables, there can be at most one instance of it\footnote{Unless the global variable stores the ``objects'' in an aggregated data structure like an array, a linked list or a hash table, with an identifier as the ``\emph{self}'' parameter (e.g. an integer or a string) to access a specific element. But this is really ugly code, please don't do that!}.
 
 %TODO explain new() (allocation on the heap) vs init() (allocation on the stack) and give an example with init(). But the example requires also the *.c code, so it's maybe better to add the explanation in a later subsection.
 
-\subsubsection{Object Destructor}
+\subsection{Object Destructor}
 \lstinline{myapp_spell_checker_free()} is the destructor of the class. It destroys an object by freeing its memory and releasing other allocated resources.
 
-\subsubsection{Other Public Functions}
+\subsection{Other Public Functions}
 The \lstinline{myapp_spell_checker_check_word()} and \lstinline{myapp_spell_checker_get_suggestions()} functions are the available features of the class. It checks whether a word is correctly spelled, and get a list of suggestions to fix a misspelled word.
 
 The \lstinline{word_length} parameter type is \lstinline{gssize}, which is a GLib integer type that can hold ---~for instance~--- the result of \lstinline{strlen()}, and can also hold a negative value since ---~contrary to \lstinline{gsize}~--- \lstinline{gssize} is a \emph{signed} integer type. The \lstinline{word_length} parameter can be \lstinline{-1} if the string is nul-terminated, that is, if the string is terminated by the special character \lstinline{'\0'}. The purpose of the \lstinline{word_length} parameter is to be able to pass a pointer to a word that belongs to a larger string, without the need to call for example \lstinline{g_strndup()}.
 
-\subsection{The Corresponding *.c File}
+\section{The Corresponding *.c File}
 
 Let's now look at the \path{myapp-spell-checker.c} file:
 
 \vspace{0.7cm}
 \lstinputlisting[caption={myapp-spell-checker.c}, label=oop-spell-checker-c]{code/myapp-spell-checker.c}
 
-\subsubsection{Order of \#include's}
+\subsection{Order of \#include's}
 At the top of the file, there is the usual list of \lstinline{#include}'s. A small but noteworthy detail is that the include order was not chosen at random. In a certain *.c file, it is better to include first its corresponding *.h file, and then the other headers\footnote{Except if you have a \path{config.h} file, in that case you should \emph{first} include \path{config.h}, \emph{then} the corresponding *.h, and then the other headers.}. By including first \path{myapp-spell-checker.h}, if an \lstinline{#include} is missing in \path{myapp-spell-checker.h}, the compiler will report an error. As explained on p.~\pageref{oop-include-in-header}, a header should always have the minimum required \lstinline{#include}'s for that header to be included in turn.
 
 Also, since \path{glib.h} is already included in \path{myapp-spell-checker.h}, there is no need to include it a second time in \path{myapp-spell-checker.c}.
 
-\subsubsection{GTK-Doc Comments}
+\subsection{GTK-Doc Comments}
 The public API is documented with GTK-Doc comments. A GTK-Doc comment begins with \lstinline{/**}, with the name of the symbol to document on the next line. When we refer to a symbol, there is a special syntax to use depending on the symbol type:
 \begin{itemize}
   \item A function parameter is prefixed by \lstinline{@}.
@@ -122,7 +121,7 @@ Describing in detail how to integrate GTK-Doc support in your code is beyond the
 
 Every GLib-based library should have a GTK-Doc documentation. But it is also useful to write a GTK-Doc documentation for the internal code of an application. As explained in section~\ref{intro-backend-frontend-separation} p.~\pageref{intro-backend-frontend-separation}, it is a good practice to separate the backend of an application from its frontend(s), and write the backend as an internal library, or, later, a shared library. As such, it is recommended to document the public API of the backend with GTK-Doc, even if it is still an internal, statically-linked library. Because when the codebase becomes bigger, it is a great help -- especially for newcomers -- to have an overview of the available classes, and to know how to use a class without the need to understand its implementation.
 
-\subsubsection{GObject Introspection Annotations}
+\subsection{GObject Introspection Annotations}
 The GTK-Doc comment for the \lstinline{myapp_spell_checker_get_suggestions()} function contains GObject Introspection annotations for the return value:
 \begin{lstlisting}
 /**
@@ -145,19 +144,19 @@ As you can see, the GI annotations are not just useful for language bindings, th
 
 For a comprehensive list of GI annotations, see the GObject Introspection wiki~\cite{gobject-introspection}.
 
-\subsubsection{Static vs Non-Static Functions}
+\subsection{Static vs Non-Static Functions}
 In the example code, you can see that the \lstinline{load_dictionary()} function has been marked as \lstinline{static}. It is in fact a good practice in C to mark internal functions as \lstinline{static}. A \lstinline{static} function can be used only in the same *.c file. On the other hand, a public function should be non-static and have a prototype in a header.
 
 There is the \texttt{-Wmissing-prototypes} GCC warning option to ensure that a piece of code follows this convention\footnote{When using the Autotools, the \texttt{AX\_COMPILER\_FLAGS} Autoconf macro enables, among other things, that GCC flag.}.
 
 Also, contrarily to a public function, a \lstinline{static} function doesn't require to be prefixed by the project and class namespaces (here, \lstinline{myapp_spell_checker}).
 
-\subsubsection{Defensive Programming}
+\subsection{Defensive Programming}
 Each public function checks its preconditions with the \lstinline{g_return_if_fail()} or \lstinline{g_return_val_if_fail()} debugging macros, as described in section~\ref{glib-debugging-macros} p.~\pageref{glib-debugging-macros}. The \emph{self} parameter is also checked, to see if it is not \lstinline{NULL}, except for the destructor, \lstinline{myapp_spell_checker_free()}, to be consistent with \lstinline{free()} and \lstinline{g_free()} which accept a \lstinline{NULL} parameter for convenience.
 
 Note that the \lstinline{g_return} macros should be used only for the entry points of a class, that is, in its public functions. You can usually assume that the parameters passed to a \lstinline{static} function are valid, especially the \emph{self} parameter. However, it is sometimes useful to check an argument of a \lstinline{static} function with \lstinline{g_assert()}, to make the code more robust and self-documented.
 
-\subsubsection{Coding Style}
+\subsection{Coding Style}
 Finally, it is worth explaining a few things about the coding style. You are encouraged to use early on the same coding style for your project, because it can be something difficult to change afterwards. If every program has different code conventions, it's a nightmare for someone willing to contribute.
 
 Here is an example of a function definition:
@@ -216,7 +215,7 @@ In GLib/GTK+, this underscore-prefix convention is normally applied to every \ls
 
 To learn more about the coding style used in GLib, GTK+ and GNOME, read the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
 
-\section{GObject}
+\chapter{GObject}
 
 GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc.
 
