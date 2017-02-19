@@ -47,7 +47,7 @@ The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to
 
 \subsection{\#include}
 \label{oop-semi-include-in-header}
-There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require including another header beforehand.
+There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require including another header beforehand\footnote{That's the general rule of thumb, but exceptions exist: for example including \lstinline{glib/gi18n-lib.h} requires that \lstinline{GETTEXT_PACKAGE} is defined, the latter being usually present in the \lstinline{config.h} header.}.
 
 \path{myapp-spell-checker.h} contains the following \lstinline{#include}:
 \begin{lstlisting}
