@@ -1,4 +1,4 @@
-\chapter{GObject}
+\chapter{A Gentle Introduction to GObject}
 \label{oop-gobject}
 
 GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc.
@@ -7,5 +7,200 @@ GObject also simplifies the event-driven programming paradigm, with signals and 
 
 It is recommended to create GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
 
-The GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:\\
+This chapter is just a small introduction to GObject, it will explain the essential things to know when \emph{using} a GObject class in a basic way. It will not explain how to create sub-classes, it is out of scope for this guide and would duplicate the content of the GObject reference manual.
+
+For more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:
+
 \url{https://developer.gnome.org/gobject/stable/}
+
+\section{Inheritance}
+
+An important concept of OOP is inheritance. A class can be a sub-class of a parent class. The sub-class inherits the features of the parent class, extending or overriding its behavior.
+
+The GObject library provides the \lstinline{GObject} base class. Every class in GIO and GTK+ inherit -- directly or indirectly -- from the \lstinline{GObject} base class. When looking at a GObject-based class, the documentation (if written with GTK-Doc) always contains an \emph{Object Hierarchy}. For instance, the \lstinline{GtkApplication} has the following object hierarchy:
+
+\begin{verbatim}
+GObject
+└── GApplication
+    └── GtkApplication
+\end{verbatim}
+
+It means that when you create a \lstinline{GtkApplication} object, you also have access to the functions, signals and properties of \lstinline{GApplication} (implemented in GIO) and \lstinline{GObject}. Of course, the \lstinline{g_application_*} functions take as first argument a variable of type ``\lstinline{GApplication *}'', not ``\lstinline{GtkApplication *}''. To cast the variable to the good type, the recommended way is to use the \lstinline{G_APPLICATION} macro. For example:
+
+\begin{lstlisting}
+GtkApplication *app;
+
+g_application_mark_busy (G_APPLICATION (app));
+\end{lstlisting}
+
+\section{GObject Macros}
+
+Each GObject class provides a set of standard macros. The \lstinline{G_APPLICATION} macro as demonstrated in the previous section is one of the standard macros provided by the \lstinline{GApplication} class.
+
+Not all the standard GObject macros will be explained here, just the macros useful for \emph{using} a GObject in a basic way. The other macros are more advanced and are usually useful only when sub-classing a GObject class, when creating a property or a signal, or when overriding a virtual function.
+
+Each GObject class defines a macro of the form \lstinline{NAMESPACE_CLASSNAME(object)}, which casts the variable to the type ``\lstinline{NamespaceClassname *}'' and checks at runtime if the variable correctly contains a \lstinline{NamespaceClassname} object or a sub-class of it. If the variable is \lstinline{NULL} or contains an incompatible object, the macro prints a critical warning message to the console and returns NULL.
+
+A standard cast works too, but is not recommended because there are no runtime checks:
+\begin{lstlisting}
+GtkApplication *app;
+
+/* Not recommended */
+g_application_mark_busy ((GApplication *) app);
+\end{lstlisting}
+
+Another macro useful when using a GObject is \lstinline{NAMESPACE_IS_CLASSNAME(object)}, which returns \lstinline{TRUE} if the variable is a \lstinline{NamespaceClassname} object or a sub-class of it.
+
+%TODO show an example of a function checking its arguments with g_return?
+
+\section{Interfaces}
+
+With GObject it is possible to create interfaces. An interface is just an API, it doesn't contain the implementation. A GObject class can implement one or several interfaces. If a GObject class is documented with GTK-Doc, the documentation will contain a section \emph{Implemented Interfaces}.
+
+For example GTK+ contains the \lstinline{GtkOrientable} interface that is implemented by many widgets and permits to set the orientation: horizontal or vertical.
+
+The two macros explained in the previous section work for interfaces too. An example with \lstinline{GtkGrid}:
+\begin{lstlisting}
+GtkWidget *vgrid;
+
+vgrid = gtk_grid_new ();
+gtk_orientable_set_orientation (GTK_ORIENTABLE (vgrid),
+                                GTK_ORIENTATION_VERTICAL);
+\end{lstlisting}
+
+So when you search a certain feature in the API for a certain GObject class, the feature can be located at three different places:
+\begin{itemize}
+  \item In the GObject class itself;
+  \item In one of the parent classes in the \emph{Object Hierarchy};
+  \item Or in one of the \emph{Implemented Interfaces}.
+\end{itemize}
+
+\section{Reference Counting}
+
+The memory management of GObject classes rely on \emph{reference counting}. A GObject class has a counter:
+\begin{itemize}
+  \item When the object is created the counter is equal to one;
+  \item \lstinline{g_object_ref()} increments the counter;
+  \item \lstinline{g_object_unref()} decrements the counter;
+  \item If the counter reaches zero, the object is freed.
+\end{itemize}
+
+It permits to store the GObject at several places without the need to coordinate when to free the object.
+
+\subsection{Avoiding Reference Cycles with Weak References}
+
+If object A references object B and object B references object A, there is a reference cycle and the two objects will never be freed. To avoid that problem, there is the concept of ``weak'' references. When calling \lstinline{g_object_ref()}, it's a ``strong'' reference. So in one direction there is a strong reference, and in the other direction there must be a weak reference (or no references at all).
+
+A weak reference can be created with \lstinline{g_object_add_weak_pointer()} or \lstinline{g_object_weak_ref()}.
+
+%TODO: add a schema of A <-> B.
+
+\subsection{Floating References}
+
+When a GObject class inherits from \lstinline{GInitiallyUnowned} (which is the case of \lstinline{GtkWidget}), the object initially has a \emph{floating} reference. \lstinline{g_object_ref_sink()} must be called to convert that floating reference into a normal, strong reference.
+
+When a GObject inherits from \lstinline{GInitiallyUnowned}, it means that that GObject is meant to be included in some kind of container. The container then assumes ownership of the floating reference, calling \lstinline{g_object_ref_sink()}. It permits to simplify the code, to remove the need to call \lstinline{g_object_unref()} after including the object into the container.
+
+With a normal GObject, the code looks like this:
+\begin{lstlisting}
+/* Normal GObject */
+
+a_normal_gobject = normal_gobject_new ();
+/* a_normal_gobject has now a reference count of 1. */
+
+container_add (container, a_normal_gobject);
+/* a_normal_gobject has now a reference count of 2. */
+
+/* We no longer need a_normal_gobject, so we unref it. */
+g_object_unref (a_normal_gobject);
+/* a_normal_gobject has now a reference count of 1. */
+\end{lstlisting}
+
+With a GObject deriving from \lstinline{GInitiallyUnowned}, \lstinline{g_object_unref()} must not be called, so it simplifies the code:
+\begin{lstlisting}
+/* GInitiallyUnowned object, e.g. a GtkWidget */
+
+widget = gtk_entry_new ();
+/* widget has now just a floating reference. */
+
+gtk_container_add (container, widget);
+/* The container has called g_object_ref_sink(), taking
+ * ownership of the floating reference. The code is
+ * simplified because we must not call g_object_unref().
+ */
+\end{lstlisting}
+
+So, it's important to know whether a GObject inherits from \lstinline{GInitiallyUnowned} or not. For that you need to look at the \emph{Object Hierarchy}, for example \lstinline{GtkEntry} has the following hierarchy:
+
+\begin{verbatim}
+GObject
+└── GInitiallyUnowned
+    └── GtkWidget
+        └── GtkEntry
+\end{verbatim}
+
+\section{Connecting a Callback Function to a Signal}
+
+A GObject class can emit signals. This is the foundation for event-driven programming. For example if you look at the \lstinline{GtkButton} documentation, you'll see that it provides the \lstinline{"clicked"} signal. As the name suggests, the signal is emitted when the user clicks on the button. To perform the desired action when the signal is emitted, one or more callback function(s) must be connected beforehand.
+
+To connect a callback to a signal, the \lstinline{g_signal_connect()} function can be used, or one of the other \lstinline{g_signal_connect_*()} functions:
+\begin{itemize}
+  \item \lstinline{g_signal_connect()}
+  \item \lstinline{g_signal_connect_after()}
+  \item \lstinline{g_signal_connect_swapped()}
+  \item \lstinline{g_signal_connect_data()}
+  \item \lstinline{g_signal_connect_object()}
+  \item And a few more advanced ones.
+\end{itemize}
+
+The \lstinline{GtkButton::clicked} signal\footnote{The convention when referring to a GObject signal is ``\lstinline{ClassName::signal-name}''. That's how it is documented with GTK-Doc comments.} has the following prototype:
+\begin{lstlisting}
+void
+user_function (GtkButton *button,
+               gpointer   user_data);
+\end{lstlisting}
+
+When using \lstinline{g_signal_connect()}, the callback function must have the same prototype as the signal prototype. A lot of signals have more arguments, and some signals return a value. If the callback has an incompatible prototype, bad things will happen, there will be random bugs or crashes.
+
+Let's see a concrete example:
+\begin{lstlisting}
+static void
+button_clicked_cb (GtkButton *button,
+                   gpointer   user_data)
+{
+  MyClass *my_class = MY_CLASS (user_data);
+
+  g_message ("Button clicked!");
+}
+
+static void
+create_button (MyClass *my_class)
+{
+  GtkButton *button;
+
+  /* Create the button */
+  /* ... */
+
+  /* Connect the callback function */
+  g_signal_connect (button,
+                    "clicked",
+                    G_CALLBACK (button_clicked_cb),
+                    my_class);
+}
+\end{lstlisting}
+
+The \lstinline{G_CALLBACK()} macro is necessary because \lstinline{g_signal_connect()} is generic: it can be used to connect to any signal of any GObject class, so the function pointer needs to be casted.
+
+There are two main conventions to name callback functions:
+\begin{itemize}
+  \item End the function name with ``\lstinline{cb}'', shortcut for ``callback''. For example: \lstinline{button_clicked_cb()} as in the above code sample.
+  \item Start the function name with ``\lstinline{on}''. For example: \lstinline{on_button_clicked()}.
+\end{itemize}
+
+With one of those naming conventions -- and with the \lstinline{gpointer user_data} parameter -- it is easy to recognize that a function is a callback.
+
+The C language permits to write a different -- but compatible -- callback function prototype, although certain developers do not recommend it:
+\begin{itemize}
+  \item One or more of the \emph{last} function argument(s) can be omitted if they are not used. But as explained above the \lstinline{gpointer user_data} argument permits to easily recognize that the function is effectively a callback.
+  \item The types of the arguments can be modified to a compatible type: e.g. another class in the inheritance hierarchy, or in the above example, replacing ``\lstinline{gpointer}'' by ``\lstinline{MyClass *}'' (but doing that makes the code a bit less robust because the \lstinline{MY_CLASS()} macro is not called).
+\end{itemize}
