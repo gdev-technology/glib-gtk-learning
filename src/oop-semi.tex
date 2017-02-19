@@ -18,7 +18,7 @@ The first thing to note is the use of the namespace ``Myapp''. Each symbol in th
 It is a good practice to choose a namespace for your code, to avoid symbol conflicts at link time. It is especially important to have a namespace for a library, but it is also better to have one for an application. Of course the namespace needs to be unique for each codebase; for instance you must \emph{not} re-use the ``G'' or ``Gtk'' namespaces for your application or library!
 
 \subsection{Class Namespace}
-Additionally, there is a second namespace with the class name, here ``SpellChecker''. If you follow that convention consistently, the name of a symbol is more predictable, which makes the API easier to work with.
+Additionally, there is a second namespace with the class name, here ``SpellChecker''. If you follow that convention consistently, the name of a symbol is more predictable, which makes the API easier to work with. The name of a symbol will always be ``project namespace'' + ``class name'' + ``symbol name''.
 
 \subsection{Lowercase, Uppercase or CamelCase?}
 Depending on the symbol type, its name is either in uppercase, lowercase or CamelCase. The convention in the GLib world is:
