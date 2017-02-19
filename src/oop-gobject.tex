@@ -1,0 +1,11 @@
+\chapter{GObject}
+\label{gobject}
+
+GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc.
+
+GObject also simplifies the event-driven programming paradigm, with signals and properties. A property is basically an instance variable with a notify signal that is emitted when its value changes. Creating a GObject signal or property is a nice way to implement the Observer design pattern; that is, one or several objects \emph{observing} state changes of another object, by connecting function callbacks. The object \emph{emitting} the signal is not aware of which objects \emph{receive} the signal. GObject just keeps track of the list of callbacks to call. So adding a signal permits to decouple classes.
+
+It is recommended to create GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
+
+The GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:\\
+\url{https://developer.gnome.org/gobject/stable/}
