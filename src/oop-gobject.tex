@@ -213,3 +213,16 @@ The C language permits to write a different -- but compatible -- callback functi
   \item One or more of the \emph{last} function argument(s) can be omitted if they are not used. But as explained above the \lstinline{gpointer user_data} argument permits to easily recognize that the function is effectively a callback\footnote{As with natural languages, redundancy permits to better and more quickly understand what we read or listen to.}.
   \item The types of the arguments can be modified to a compatible type: e.g. another class in the inheritance hierarchy, or in the above example, replacing ``\lstinline{gpointer}'' by ``\lstinline{MyClass *}'' (but doing that makes the code a bit less robust because the \lstinline{MY_CLASS()} macro is not called).
 \end{itemize}
+
+%TODO write subsection
+%\subsection{Disconnecting Signal Handlers}
+
+% Explain when it is necessary to disconnect signal handlers.
+% Show complete code example with a semi-OOP class disconnecting its signal handler.
+% Mention g_signal_connect_object().
+
+%TODO write subsection
+%\subsection{Properties}
+
+% Show code example with the notify::detail signal.
+% Property bindings.
