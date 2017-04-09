@@ -3,9 +3,6 @@
 
 In the previous chapter we have learned how to write semi-object-oriented code in C. This is how the classes in GLib core are written. GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc. GObject also simplifies the event-driven programming paradigm, with signals and properties.
 
-% TODO move this to a section, not in the intro.
-%A property is basically an instance variable with a notify signal that is emitted when its value changes. Creating a GObject signal or property is a nice way to implement the Observer design pattern; that is, one or several objects \emph{observing} state changes of another object, by connecting function callbacks. The object \emph{emitting} the signal is not aware of which objects \emph{receive} the signal. GObject just keeps track of the list of callbacks to call. So adding a signal permits to decouple classes.
-
 It is recommended to create your own GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
 
 However this chapter takes a step back from the previous chapter, it is just a small introduction to GObject; it will explain the essential things to know when \emph{using} an existing GObject class (like all GTK+ widgets and classes in GIO). It will not explain how to create your own GObject classes, because it is already well covered in the GObject reference manual, and the goal of this book is not to duplicate the whole content of the reference manuals, the goal is more to serve as a getting started guide.
@@ -142,9 +139,17 @@ GObject
         └── GtkEntry
 \end{verbatim}
 
-\section{Connecting a Callback Function to a Signal}
+\section{Signals and Properties}
 
-A GObject class can emit signals. This is the foundation for event-driven programming. For example if you look at the \lstinline{GtkButton} documentation, you'll see that it provides the \lstinline{"clicked"} signal. As the name suggests, the signal is emitted when the user clicks on the button. To perform the desired action when the signal is emitted, one or more callback function(s) must be connected beforehand.
+A GObject class can emit signals. With the GLib main event loop (previously explained in section~\ref{glib-main-event-loop} p.~\pageref{glib-main-event-loop}), this is the foundation for event-driven programming. An example of a signal is when the user clicks on a button. The application connects a callback function to the signal to perform the desired action when the event occurs.
+
+Another concept of GObject are \emph{properties}, which is related to signals. A property is basically an instance variable surmounted with a \lstinline{"notify"} signal that is emitted when its value changes. A good example of a property is the state of a check button, i.e. a boolean value describing whether the button is currently checked or not. When the state changes, the \lstinline{"notify"} signal is sent.
+
+To create your own signals or properties, a GObject sub-class must be created. As explained in the introduction of this chapter, this is beyond the scope of this book, but you should be aware that creating your own signals or properties is of course possible, and recommended. In fact, creating a GObject signal or property is a nice way to implement the Observer design pattern \cite{design-patterns-book}; that is, one or several objects \emph{observing} state changes of another object, by connecting function callbacks. The object \emph{emitting} the signal is not aware of which objects \emph{receive} the signal. GObject just keeps track of the list of callbacks to call. So adding a signal permits to decouple classes.
+
+\subsection{Connecting a Callback Function to a Signal}
+
+To make things more concrete, if you look at the \lstinline{GtkButton} documentation, you'll see that it provides the \lstinline{"clicked"} signal. To perform the desired action when the signal is emitted, one or more callback function(s) must be connected beforehand.
 
 To connect a callback to a signal, the \lstinline{g_signal_connect()} function can be used, or one of the other \lstinline{g_signal_connect_*()} functions:
 \begin{itemize}
@@ -165,8 +170,9 @@ user_function (GtkButton *button,
 
 When using \lstinline{g_signal_connect()}, the callback function must have the same prototype as the signal prototype. A lot of signals have more arguments, and some signals return a value. If the callback has an incompatible prototype, bad things will happen, there will be random bugs or crashes.
 
-Let's see a concrete example:
-\begin{lstlisting}
+The Listing~\ref{oop-gobject-connect-to-signal} p.~\pageref{oop-gobject-connect-to-signal} shows an example of how to use \lstinline{g_signal_connect()}.
+
+\begin{lstlisting}[float, caption={How to connect to a signal}, label=oop-gobject-connect-to-signal]
 static void
 button_clicked_cb (GtkButton *button,
                    gpointer   user_data)
@@ -202,8 +208,8 @@ There are two main conventions to name callback functions:
 
 With one of those naming conventions -- and with the \lstinline{gpointer user_data} parameter -- it is easy to recognize that a function is a callback.
 
-The C language permits to write a different -- but compatible -- callback function prototype, although certain developers do not recommend it:
+The C language permits to write a different -- but compatible -- callback function signature, although it is not universally seen as a good thing to do:
 \begin{itemize}
-  \item One or more of the \emph{last} function argument(s) can be omitted if they are not used. But as explained above the \lstinline{gpointer user_data} argument permits to easily recognize that the function is effectively a callback.
+  \item One or more of the \emph{last} function argument(s) can be omitted if they are not used. But as explained above the \lstinline{gpointer user_data} argument permits to easily recognize that the function is effectively a callback\footnote{As with natural languages, redundancy permits to better and more quickly understand what we read or listen to.}.
   \item The types of the arguments can be modified to a compatible type: e.g. another class in the inheritance hierarchy, or in the above example, replacing ``\lstinline{gpointer}'' by ``\lstinline{MyClass *}'' (but doing that makes the code a bit less robust because the \lstinline{MY_CLASS()} macro is not called).
 \end{itemize}
