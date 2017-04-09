@@ -17,7 +17,7 @@ To explain certain concepts, some examples are taken from GTK+ or GIO. When read
 
 An important concept of OOP is inheritance. A class can be a sub-class of a parent class. The sub-class inherits the features of the parent class, extending or overriding its behavior.
 
-The GObject library provides the \lstinline{GObject} base class. Every class in GIO and GTK+ inherit -- directly or indirectly -- from the \lstinline{GObject} base class. When looking at a GObject-based class, the documentation (if written with GTK-Doc) always contains an \emph{Object Hierarchy}. For instance, the \lstinline{GtkApplication} has the following object hierarchy:
+The GObject library provides the \lstinline{GObject} base class. Every class in GIO and GTK+ inherit --- directly or indirectly --- from the \lstinline{GObject} base class. When looking at a GObject-based class, the documentation (if written with GTK-Doc) always contains an \emph{Object Hierarchy}. For instance, the \lstinline{GtkApplication} has the following object hierarchy:
 
 \begin{verbatim}
 GObject
@@ -206,9 +206,9 @@ There are two main conventions to name callback functions:
   \item Start the function name with ``\lstinline{on}''. For example: \lstinline{on_button_clicked()}.
 \end{itemize}
 
-With one of those naming conventions -- and with the \lstinline{gpointer user_data} parameter -- it is easy to recognize that a function is a callback.
+With one of those naming conventions --- and with the \lstinline{gpointer user_data} parameter, which is always the last parameter --- it is easy to recognize that a function is a callback.
 
-The C language permits to write a different -- but compatible -- callback function signature, although it is not universally seen as a good thing to do:
+The C language permits to write a different --- but compatible --- callback function signature, although it is not universally seen as a good thing to do:
 \begin{itemize}
   \item One or more of the \emph{last} function argument(s) can be omitted if they are not used. But as explained above the \lstinline{gpointer user_data} argument permits to easily recognize that the function is effectively a callback\footnote{As with natural languages, redundancy permits to better and more quickly understand what we read or listen to.}.
   \item The types of the arguments can be modified to a compatible type: e.g. another class in the inheritance hierarchy, or in the above example, replacing ``\lstinline{gpointer}'' by ``\lstinline{MyClass *}'' (but doing that makes the code a bit less robust because the \lstinline{MY_CLASS()} macro is not called).
