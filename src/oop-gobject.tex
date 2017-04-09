@@ -25,7 +25,7 @@ GObject
     └── GtkApplication
 \end{verbatim}
 
-It means that when you create a \lstinline{GtkApplication} object, you also have access to the functions, signals and properties of \lstinline{GApplication} (implemented in GIO) and \lstinline{GObject}. Of course, the \lstinline{g_application_*} functions take as first argument a variable of type ``\lstinline{GApplication *}'', not ``\lstinline{GtkApplication *}''. To cast the variable to the good type, the recommended way is to use the \lstinline{G_APPLICATION} macro. For example:
+It means that when you create a \lstinline{GtkApplication} object, you also have access to the functions, signals and properties of \lstinline{GApplication} (implemented in GIO) and \lstinline{GObject}. Of course, the \lstinline{g_application_*} functions take as first argument a variable of type ``\lstinline{GApplication *}'', not ``\lstinline{GtkApplication *}''. To cast the variable to the good type, the recommended way is to use the \lstinline{G_APPLICATION()} macro. For example:
 
 \begin{lstlisting}
 GtkApplication *app;
@@ -35,13 +35,13 @@ g_application_mark_busy (G_APPLICATION (app));
 
 \section{GObject Macros}
 
-Each GObject class provides a set of standard macros. The \lstinline{G_APPLICATION} macro as demonstrated in the previous section is one of the standard macros provided by the \lstinline{GApplication} class.
+Each GObject class provides a set of standard macros. The \lstinline{G_APPLICATION()} macro as demonstrated in the previous section is one of the standard macros provided by the \lstinline{GApplication} class.
 
 Not all the standard GObject macros will be explained here, just the macros useful for \emph{using} a GObject in a basic way. The other macros are more advanced and are usually useful only when sub-classing a GObject class, when creating a property or a signal, or when overriding a virtual function.
 
 Each GObject class defines a macro of the form \lstinline{NAMESPACE_CLASSNAME(object)}, which casts the variable to the type ``\lstinline{NamespaceClassname *}'' and checks at runtime if the variable correctly contains a \lstinline{NamespaceClassname} object or a sub-class of it. If the variable is \lstinline{NULL} or contains an incompatible object, the macro prints a critical warning message to the console and returns NULL.
 
-A standard cast works too, but is not recommended because there are no runtime checks:
+A standard cast works too, but is most of the time not recommended because there are no runtime checks:
 \begin{lstlisting}
 GtkApplication *app;
 
