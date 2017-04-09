@@ -1,15 +1,16 @@
 \chapter{A Gentle Introduction to GObject}
 \label{oop-gobject}
 
-GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc.
+In the previous chapter we have learned how to write semi-object-oriented code in C. This is how the classes in GLib core are written. GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc. GObject also simplifies the event-driven programming paradigm, with signals and properties.
 
-GObject also simplifies the event-driven programming paradigm, with signals and properties. A property is basically an instance variable with a notify signal that is emitted when its value changes. Creating a GObject signal or property is a nice way to implement the Observer design pattern; that is, one or several objects \emph{observing} state changes of another object, by connecting function callbacks. The object \emph{emitting} the signal is not aware of which objects \emph{receive} the signal. GObject just keeps track of the list of callbacks to call. So adding a signal permits to decouple classes.
+% TODO move this to a section, not in the intro.
+%A property is basically an instance variable with a notify signal that is emitted when its value changes. Creating a GObject signal or property is a nice way to implement the Observer design pattern; that is, one or several objects \emph{observing} state changes of another object, by connecting function callbacks. The object \emph{emitting} the signal is not aware of which objects \emph{receive} the signal. GObject just keeps track of the list of callbacks to call. So adding a signal permits to decouple classes.
 
-It is recommended to create GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
+It is recommended to create your own GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
 
-This chapter is just a small introduction to GObject, it will explain the essential things to know when \emph{using} a GObject class in a basic way. It will not explain how to create sub-classes, it is out of scope for this guide and would duplicate the content of the GObject reference manual.
+However this chapter takes a step back from the previous chapter, it is just a small introduction to GObject; it will explain the essential things to know when \emph{using} an existing GObject class (like all GTK+ widgets and classes in GIO). It will not explain how to create your own GObject classes, because it is already well covered in the GObject reference manual, and the goal of this book is not to duplicate the whole content of the reference manuals, the goal is more to serve as a getting started guide.
 
-For more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:
+So for more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:
 
 \url{https://developer.gnome.org/gobject/stable/}
 
