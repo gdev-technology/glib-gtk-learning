@@ -214,12 +214,21 @@ The C language permits to write a different --- but compatible --- callback func
   \item The types of the arguments can be modified to a compatible type: e.g. another class in the inheritance hierarchy, or in the above example, replacing ``\lstinline{gpointer}'' by ``\lstinline{MyClass *}'' (but doing that makes the code a bit less robust because the \lstinline{MY_CLASS()} macro is not called).
 \end{itemize}
 
-%TODO write subsection
-%\subsection{Disconnecting Signal Handlers}
+\subsection{Disconnecting Signal Handlers}
 
-% Explain when it is necessary to disconnect signal handlers.
-% Show complete code example with a semi-OOP class disconnecting its signal handler.
-% Mention g_signal_connect_object().
+In the Listing~\ref{oop-gobject-connect-to-signal}, \lstinline{button_clicked_cb()} is called each time that the \lstinline{button} object emits the \lstinline{"clicked"} signal. If the \lstinline{button} object is still alive after \lstinline{my_class} has been freed, when the signal will be emitted again there will be a little problem… So in the destructor of \lstinline{MyClass}, the signal handler (i.e. the callback) must be disconnected. How to do that?
+
+The \lstinline{g_signal_connect*()} functions actually return an ID of the signal handler, as a \lstinline{gulong} integer always greater than 0 (for successful connections). By storing that ID, it is possible to disconnect that specific signal handler with the \lstinline{g_signal_handler_disconnect()} function.
+
+Sometimes we also want to disconnect the signal handler simply because we are no longer interested by the event.
+
+The Listing~\ref{oop-gobject-disconnect-signal} shows a complete example of how to disconnect a signal handler when its \lstinline{user_data} argument is freed. We come back to an example with a spell checker, because the example with the GTK+ button is not the most appropriate\footnote{Most of the time a GTK+ widget doesn't live longer than the container it is added to, and the object listening to the widget signal is usually the container itself. Since the widget dies at the same time as the container, it is not possible for the widget to send a signal while its container is already destroyed. So in that case, there is no point in disconnecting the signal in the container destructor, since at that point the widget is already freed; and it would be hard for a dead object to send a signal.}.
+
+The \lstinline{user_data} argument is a \lstinline{MyTextView} instance, with \lstinline{MyTextView} implemented with a semi-OOP style.
+
+\lstinputlisting[caption={Disconnecting a signal handler when its \lstinline{user_data} argument is freed.}, label=oop-gobject-disconnect-signal]{code/disconnect-signal.c}
+
+%TODO Mention g_signal_connect_object() and other g_signal_handler*() functions.
 
 %TODO write subsection
 %\subsection{Properties}
