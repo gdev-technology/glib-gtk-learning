@@ -229,8 +229,16 @@ The \lstinline{user_data} callback argument is a \lstinline{MyTextView} instance
 \vspace{0.7cm}
 \lstinputlisting[caption={Disconnecting a signal handler when its \lstinline{user_data} argument is freed.}, label=oop-gobject-disconnect-signal]{code/disconnect-signal.c}
 
-%TODO Mention g_signal_connect_object() and other g_signal_handler*() functions.
+There are actually other \lstinline{g_signal_handler*()} functions that permit to disconnect signal handlers:
+\begin{itemize}
+  \item \lstinline{g_signal_handlers_disconnect_by_data()}
+  \item \lstinline{g_signal_handlers_disconnect_by_func()}
+  \item \lstinline{g_signal_handlers_disconnect_matched()}
+\end{itemize}
 
+It would have been possible to use one of the above functions in Listing~\ref{oop-gobject-disconnect-signal}, and it would have avoided the need to store \lstinline{word_added_to_personal_handler_id}. The basic \lstinline{g_signal_handler_disconnect()} function has been used for learning purposes.
+
+Note also that if \lstinline{MyTextView} was a GObject class, it would have been possible to connect to the spell checker signal with \lstinline{g_signal_connect_object()}, and it would have removed completely the need to manually disconnecting the signal handler in the \lstinline{MyTextView} destructor. One more (small) reason to learn how to create GObject sub-classes.
 
 %TODO write subsection
 %\subsection{Properties}
