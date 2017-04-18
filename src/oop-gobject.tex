@@ -91,9 +91,17 @@ It permits to store the GObject at several places without the need to coordinate
 
 If object A references object B and object B references object A, there is a reference cycle and the two objects will never be freed. To avoid that problem, there is the concept of ``weak'' references. When calling \lstinline{g_object_ref()}, it's a ``strong'' reference. So in one direction there is a strong reference, and in the other direction there must be a weak reference (or no references at all).
 
-A weak reference can be created with \lstinline{g_object_add_weak_pointer()} or \lstinline{g_object_weak_ref()}.
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.75]{images/weak-ref.pdf}
+    \caption{Using a weak reference to break the reference cycle between A and B.}
+    \label{oop-gobject-weak-ref-schema}
+  \end{center}
+\end{figure}
 
-%TODO: add a schema of A <-> B.
+In Figure~\ref{oop-gobject-weak-ref-schema} we can see that object A has a strong reference to object B, and object B has a weak reference to object A.
+
+A weak reference can be created with \lstinline{g_object_add_weak_pointer()} or \lstinline{g_object_weak_ref()}. As with strong references, it is important to release the reference when no longer needed, usually in the class destructor. A weak reference must be removed with \lstinline{g_object_remove_weak_pointer()} or \lstinline{g_object_weak_unref()}. So in Figure~\ref{oop-gobject-weak-ref-schema}, the destructor of class B must remove the weak reference if it is not already done.
 
 \subsection{Floating References}
 
@@ -140,6 +148,7 @@ GObject
 \end{verbatim}
 
 \section{Signals and Properties}
+\label{oop-gobject-signals-and-properties}
 
 A GObject class can emit signals. With the GLib main event loop (previously explained in section~\ref{glib-main-event-loop} p.~\pageref{glib-main-event-loop}), this is the foundation for event-driven programming. An example of a signal is when the user clicks on a button. The application connects a callback function to the signal to perform the desired action when the event occurs.
 
@@ -242,8 +251,99 @@ It would have been possible to use one of the above functions in Listing~\ref{oo
 
 Note also that if \lstinline{MyTextView} was a GObject class, it would have been possible to connect to the spell checker signal with \lstinline{g_signal_connect_object()}, and it would have removed completely the need to manually disconnecting the signal handler in the \lstinline{MyTextView} destructor. One more (small) reason to learn how to create GObject sub-classes.
 
-%TODO write subsection
-%\subsection{Properties}
+\subsection{Properties}
 
-% Show code example with the notify::detail signal.
-% Property bindings.
+If you have looked at the GTK+ or GIO API reference, you must have noticed that some GObject classes have one or more \emph{properties}. A property is like an instance variable, also called ``attribute'', but is different in the GObject context because it has additional interesting properties\footnote{Pun intended.}.
+
+As previously said at the beginning of section~\ref{oop-gobject-signals-and-properties} p.~\pageref{oop-gobject-signals-and-properties}, a good example of a property is the state of a check button, i.e. a boolean value describing whether the button is currently checked or not. If you already know a little GTK+, you might have found that a check button is available with the \lstinline{GtkCheckButton} widget. But there was a little trap if you wanted to find the property that I was talking about, because the property is implemented in the parent class \lstinline{GtkToggleButton}: the \lstinline{GtkToggleButton:active} property\footnote{In the same way as signals are documented with GTK-Doc as ``\lstinline{ClassName::signal-name}'', properties are documented as ``\lstinline{ClassName:property-name}''.}.
+
+\subsubsection{The \lstinline{"notify"} Signal}
+
+The main attribute\footnote{Pun also intended.} of a property ---~besides representing a value~--- is that the GObject class emits the \lstinline{GObject::notify} signal when the value of a property changes.
+
+There is one concept of GObject signals that is not yet explained and is used with the \lstinline{GObject::notify} signal: when emitting a signal, a \emph{detail} can be provided. In the case of the notify signal, the detail is the name of the property whose value has changed. Since there is only one signal for all properties, thanks to the \emph{detail} it is possible to connect a callback to be notified only when a certain property has changed. If the \emph{detail} is not provided when connecting the callback, the callback would be called when \emph{any} of the object properties change, which is generally not what is wanted.
+
+It will be clearer with an example. The Listing~\ref{oop-gobject-connect-to-notify} shows how to connect to the notify signal. Note that instead of connecting to the \lstinline{"notify::active"} detailed signal, it is actually more convenient to use the \lstinline{GtkToggleButton::toggled} signal. There are better real-world use-cases where it is needed to connect to the notify signal, but at least the Listing~\ref{oop-gobject-connect-to-notify} is hopefully understandable with only limited GTK+ knowledge (and if you look at the documentation in Devhelp in parallel).
+
+\vspace{0.7cm}
+\begin{lstlisting}[caption={Connecting to the notify signal to listen to property changes.}, label=oop-gobject-connect-to-notify]
+/* If you look at the notify signal documentation, the first parameter
+ * has the type GObject, not GtkCheckButton. Since GtkCheckButton is a
+ * sub-class of GObject, the C language allows to write GtkCheckButton
+ * directly.
+ */
+static void
+check_button_notify_cb (GtkCheckButton *check_button,
+                        GParamSpec     *pspec,
+                        gpointer        user_data)
+{
+  /* Called each time that any property of check_button changes. */
+}
+
+static void
+check_button_notify_active_cb (GtkCheckButton *check_button,
+                               GParamSpec     *pspec,
+                               gpointer        user_data)
+{
+  MyWindow *window = MY_WINDOW (user_data);
+  gboolean active;
+
+  active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check_button));
+  gtk_widget_set_visible (window->side_panel, active);
+}
+
+static GtkWidget *
+create_check_button (MyWindow *window)
+{
+  GtkWidget *check_button;
+
+  check_button = gtk_check_button_new_with_label ("Show side panel");
+
+  /* Connect without the detail. */
+  g_signal_connect (check_button,
+                    "notify",
+                    G_CALLBACK (check_button_notify_cb),
+                    NULL);
+
+  /* Connect with the detail, to be notified only when
+   * the GtkToggleButton:active property changes.
+   */
+  g_signal_connect (check_button,
+                    "notify::active",
+                    G_CALLBACK (check_button_notify_active_cb),
+                    window);
+
+  return check_button;
+}
+\end{lstlisting}
+
+\subsubsection{Property Bindings}
+
+Another useful aspect of properties is that two properties can easily be bound: when one property changes, the other is updated to have the same value. The same can be accomplished with the \lstinline{"notify"} signal, but higher-level functions exist.
+
+Two properties can be bound in various ways with one of the \lstinline{g_object_bind_property*()} functions. The Listing~\ref{oop-gobject-binding-properties} shows a simpler implementation of Listing~\ref{oop-gobject-connect-to-notify}; the code is equivalent, but uses the \lstinline{g_object_bind_property()} function.
+
+\vspace{0.7cm}
+\begin{lstlisting}[caption={Binding two properties.}, label=oop-gobject-binding-properties]
+static GtkWidget *
+create_check_button (MyWindow *window)
+{
+  GtkWidget *check_button;
+
+  check_button = gtk_check_button_new_with_label ("Show side panel");
+
+  /* When the GtkToggleButton:active property of check_button changes,
+   * the GtkWidget:visible property of window->side_panel is updated to
+   * have the same boolean value.
+   *
+   * It would be useful to add G_BINDING_SYNC_CREATE to the flags, but
+   * in that case the code would not be equivalent to the previous
+   * code Listing.
+   */
+  g_object_bind_property (check_button, "active",
+                          window->side_panel, "visible",
+                          G_BINDING_DEFAULT);
+
+  return check_button;
+}
+\end{lstlisting}
