@@ -33,9 +33,24 @@ The chapter~\ref{oop-gobject} explained how to \emph{use} an existing GObject cl
 As was explained at the beginning of chapter~\ref{oop-gobject}, if you want to learn more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available as usual in Devhelp or online at:\\
 \url{https://developer.gnome.org/gobject/stable/}
 
-\section{Autotools}
+\section{Build System}
 
-A Makefile is generally not sufficient if you want to install your application on different systems. The Autotools (Autoconf, Automake and Libtool) are what GNOME modules use. Macros are available for various purposes (the user documentation, code coverage statistics for unit tests, etc.). The most recent book on the subject is \emph{Autotools}, by John~Calcote \cite{autotools}.
+A basic Makefile is generally not sufficient if you want to install your application on different systems. So a more sophisticated solution is needed. For a program based on GLib/GTK+, there are two main alternatives: the Autotools and Meson.
+
+GNOME and GTK+ historically use the Autotools, but as of 2017 some modules (including GTK+) are migrating to Meson. For a new project, Meson can be recommended.
+
+\subsection{The Autotools}
+
+The Autotools comprise three main components: Autoconf, Automake and Libtool. It is based on shell scripts, m4 macros and \shellcmd{make}.
+
+Macros are available for various purposes (the user documentation, code coverage statistics for unit tests, etc.). The most recent book on the subject is \emph{Autotools}, by John~Calcote \cite{autotools}.
+
+But the Autotools have the reputation to be difficult to learn.
+
+\subsection{Meson}
+
+Meson is a fairly new build system, is easier to learn than the Autotools, and also results to faster builds. Some GNOME modules already use Meson. See the website for more information:\\
+\url{http://mesonbuild.com/}
 
 \section{Programming Best-Practices}
 
