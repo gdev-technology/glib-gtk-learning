@@ -1,3 +1,12 @@
+News in 0.7, 2017-04-21
+-----------------------
+* Write new chapter: "A Gentle Introduction to GObject".
+* Improve the chapter semi-OOP in C.
+* Add subtitle to the book: "A Getting Started Guide".
+* Intro: add Financial Support section.
+* Separate the book in 3 parts.
+* Further reading chapter: talk about Meson in addition to the Autotools.
+
 News in 0.6, 2016-08-08
 -----------------------
 * Improve the section semi-OOP in C
