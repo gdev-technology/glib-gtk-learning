@@ -109,8 +109,9 @@ When a GObject class inherits from \lstinline{GInitiallyUnowned} (which is the c
 
 When a GObject inherits from \lstinline{GInitiallyUnowned}, it means that that GObject is meant to be included in some kind of container. The container then assumes ownership of the floating reference, calling \lstinline{g_object_ref_sink()}. It permits to simplify the code, to remove the need to call \lstinline{g_object_unref()} after including the object into the container.
 
-With a normal GObject, the code looks like this:
-\begin{lstlisting}
+The Listing~\ref{oop-gobject-mem-management-normal} p.~\pageref{oop-gobject-mem-management-normal} shows how memory management is handled with a normal GObject. Compare this to the Listing~\ref{oop-gobject-mem-management-floating}, which shows how memory management is handled with a GObject deriving from \lstinline{GInitiallyUnowned}. The difference is that \lstinline{g_object_unref()} is not called in the latter Listing, so it shortens the code.
+
+\begin{lstlisting}[float=p, caption={Memory management of normal GObjects.}, label=oop-gobject-mem-management-normal]
 /* Normal GObject */
 
 a_normal_gobject = normal_gobject_new ();
@@ -124,8 +125,7 @@ g_object_unref (a_normal_gobject);
 /* a_normal_gobject has now a reference count of 1. */
 \end{lstlisting}
 
-With a GObject deriving from \lstinline{GInitiallyUnowned}, \lstinline{g_object_unref()} must not be called, so it simplifies the code:
-\begin{lstlisting}
+\begin{lstlisting}[float=p, caption={Memory management of GObjects deriving from \lstinline{GInitiallyUnowned}.}, label=oop-gobject-mem-management-floating]
 /* GInitiallyUnowned object, e.g. a GtkWidget */
 
 widget = gtk_entry_new ();
@@ -170,8 +170,9 @@ To connect a callback to a signal, the \lstinline{g_signal_connect()} function c
   \item And a few more advanced ones.
 \end{itemize}
 
-The \lstinline{GtkButton::clicked} signal\footnote{The convention when referring to a GObject signal is ``\lstinline{ClassName::signal-name}''. That's how it is documented with GTK-Doc comments.} has the following prototype:
-\begin{lstlisting}
+The Listing~\ref{oop-gobject-gtkbutton-clicked} p.~\pageref{oop-gobject-gtkbutton-clicked} shows the prototype of the \lstinline{GtkButton::clicked} signal\footnote{The convention when referring to a GObject signal is ``\lstinline{ClassName::signal-name}''. That's how it is documented with GTK-Doc comments.}.
+
+\begin{lstlisting}[float, caption={The prototype of the \lstinline{GtkButton::clicked} signal.}, label=oop-gobject-gtkbutton-clicked]
 void
 user_function (GtkButton *button,
                gpointer   user_data);
@@ -263,10 +264,9 @@ The main attribute\footnote{Pun also intended.} of a property ---~besides repres
 
 There is one concept of GObject signals that is not yet explained and is used with the \lstinline{GObject::notify} signal: when emitting a signal, a \emph{detail} can be provided. In the case of the notify signal, the detail is the name of the property whose value has changed. Since there is only one signal for all properties, thanks to the \emph{detail} it is possible to connect a callback to be notified only when a certain property has changed. If the \emph{detail} is not provided when connecting the callback, the callback would be called when \emph{any} of the object properties change, which is generally not what is wanted.
 
-It will be clearer with an example. The Listing~\ref{oop-gobject-connect-to-notify} shows how to connect to the notify signal. Note that instead of connecting to the \lstinline{"notify::active"} detailed signal, it is actually more convenient to use the \lstinline{GtkToggleButton::toggled} signal. There are better real-world use-cases where it is needed to connect to the notify signal, but at least the Listing~\ref{oop-gobject-connect-to-notify} is hopefully understandable with only limited GTK+ knowledge (and if you look at the documentation in Devhelp in parallel).
+It will be clearer with an example. The Listing~\ref{oop-gobject-connect-to-notify} p.~\pageref{oop-gobject-connect-to-notify} shows how to connect to the notify signal. Note that instead of connecting to the \lstinline{"notify::active"} detailed signal, it is actually more convenient to use the \lstinline{GtkToggleButton::toggled} signal. There are better real-world use-cases where it is needed to connect to the notify signal, but at least the Listing~\ref{oop-gobject-connect-to-notify} is hopefully understandable with only limited GTK+ knowledge (and if you look at the documentation in Devhelp in parallel).
 
-\vspace{0.7cm}
-\begin{lstlisting}[caption={Connecting to the notify signal to listen to property changes.}, label=oop-gobject-connect-to-notify]
+\begin{lstlisting}[float, caption={Connecting to the notify signal to listen to property changes.}, label=oop-gobject-connect-to-notify]
 /* If you look at the notify signal documentation, the first parameter
  * has the type GObject, not GtkCheckButton. Since GtkCheckButton is a
  * sub-class of GObject, the C language allows to write GtkCheckButton
