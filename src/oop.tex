@@ -11,3 +11,9 @@ Every GTK+ widget is a subclass of the GObject base class. So knowing the basic 
 It is important to note that although the C language is not object-oriented, it is possible to write ``semi-object-oriented'' C code easily, without GObject. For learning purposes, that's what this part begins with. GObject is then easier to learn. What GObject adds is more features such as reference counting, inheritance, virtual functions, interfaces, signals and more.
 
 But why following an object-oriented style in the first place? An object-oriented code permits to avoid global variables. And if you have read any sort of programming best-practices guide, you know that you \emph{should}, if possible, avoid global variables\footnote{A global variable in C can be a \lstinline{static} variable declared at the top of a *.c file, that can thus be accessed from any function in that *.c file. This is sometimes useful, but should be avoided if possible. There is another kind of global variable in C: an \lstinline{extern} variable that can be accessed from any *.c file. The latter is much worse than the former.}. Because using global data makes the code harder to manage and understand, especially when a program becomes larger. It also makes the code more difficult to re-use. It is instead better to break a program into smaller, self-contained pieces, so that you can focus on only one part of the code at a time.
+
+This part of the book comprises two chapters:
+\begin{itemize}
+  \item Chapter~\ref{oop-semi}, which explains how to write your own semi-OOP classes;
+  \item Chapter~\ref{oop-gobject}, which explains the basics of GObject.
+\end{itemize}
