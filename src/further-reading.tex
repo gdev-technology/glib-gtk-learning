@@ -26,6 +26,13 @@ After reading the Getting Started guide, skim through the whole API reference to
 There is also a series of small tutorials on various GLib/GTK+ topics:\\
 \url{https://wiki.gnome.org/HowDoI}
 
+\section{Writing Your Own GObject Classes}
+
+The chapter~\ref{oop-gobject} explained how to \emph{use} an existing GObject class, which is very useful to learn GTK+, but it didn't explain how to \emph{create} your own GObject classes. Writing your own GObject classes permit to have reference counting, you can create your own properties and signals, you can implement interfaces, overriding virtual functions (if the virtual function is not associated to a signal), etc.
+
+As was explained at the beginning of chapter~\ref{oop-gobject}, if you want to learn more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available as usual in Devhelp or online at:\\
+\url{https://developer.gnome.org/gobject/stable/}
+
 \section{Autotools}
 
 A Makefile is generally not sufficient if you want to install your application on different systems. The Autotools (Autoconf, Automake and Libtool) are what GNOME modules use. Macros are available for various purposes (the user documentation, code coverage statistics for unit tests, etc.). The most recent book on the subject is \emph{Autotools}, by John~Calcote \cite{autotools}.
