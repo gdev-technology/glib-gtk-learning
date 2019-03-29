@@ -1,3 +1,10 @@
+News in 0.8, 2019-03-29
+-----------------------
+* Include a draft of a new chapter: "Example of a GTK+ Application Code
+  Architecture".
+* Intro: add section "Todo List for this Book and a Quick 2019 Update" (better
+  than nothing).
+
 News in 0.7, 2017-04-21
 -----------------------
 * Write new chapter: "A Gentle Introduction to GObject".
