@@ -3,22 +3,22 @@
 
 In the previous chapter we have learned how to write semi-object-oriented code in C. This is how the classes in GLib core are written. GObject goes several steps further into Object-Oriented Programming, with inheritance, interfaces, virtual functions, etc. GObject also simplifies the event-driven programming paradigm, with signals and properties.
 
-It is recommended to create your own GObject classes for writing a GLib/GTK+ application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
+It is recommended to create your own GObject classes for writing a GLib/GTK application. Unfortunately the code is a little verbose, because the C language is not object-oriented. Boilerplate code is needed for some features, but don't be afraid, there are tools and scripts to generate the boilerplate.
 
-However this chapter takes a step back from the previous chapter, it is just a small introduction to GObject; it will explain the essential things to know how to \emph{use} an existing GObject class (like all GTK+ widgets and classes in GIO). It will not explain how to \emph{create} your own GObject classes, because it is already well covered in the GObject reference manual, and the goal of this book is not to duplicate the whole content of the reference manuals, the goal is more to serve as a getting started guide.
+However this chapter takes a step back from the previous chapter, it is just a small introduction to GObject; it will explain the essential things to know how to \emph{use} an existing GObject class (like all GTK widgets and classes in GIO). It will not explain how to \emph{create} your own GObject classes, because it is already well covered in the GObject reference manual, and the goal of this book is not to duplicate the whole content of the reference manuals, the goal is more to serve as a getting started guide.
 
 So for more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available at:
 
 \url{https://developer.gnome.org/gobject/stable/}
 
-To explain certain concepts, some examples are taken from GTK+ or GIO. When reading this chapter, you are encouraged to open in parallel Devhelp, to look at the API reference and see for yourself how a GObject-based library is documented. The goal is that you become autonomous and be able to learn any new GObject class, be it in GIO, GTK+ or any other library.
+To explain certain concepts, some examples are taken from GTK or GIO. When reading this chapter, you are encouraged to open in parallel Devhelp, to look at the API reference and see for yourself how a GObject-based library is documented. The goal is that you become autonomous and be able to learn any new GObject class, be it in GIO, GTK or any other library.
 
 \section{Inheritance}
 \label{oop-gobject-inheritance}
 
 An important concept of OOP is inheritance. A class can be a sub-class of a parent class. The sub-class inherits the features of the parent class, extending or overriding its behavior.
 
-The GObject library provides the \lstinline{GObject} base class. Every class in GIO and GTK+ inherit --- directly or indirectly --- from the \lstinline{GObject} base class. When looking at a GObject-based class, the documentation (if written with GTK-Doc) always contains an \emph{Object Hierarchy}. For instance, the \lstinline{GtkApplication} has the following object hierarchy:
+The GObject library provides the \lstinline{GObject} base class. Every class in GIO and GTK inherit --- directly or indirectly --- from the \lstinline{GObject} base class. When looking at a GObject-based class, the documentation (if written with GTK-Doc) always contains an \emph{Object Hierarchy}. For instance, the \lstinline{GtkApplication} has the following object hierarchy:
 
 \begin{verbatim}
 GObject
@@ -58,7 +58,7 @@ Another macro useful when using a GObject is \lstinline{NAMESPACE_IS_CLASSNAME(o
 
 With GObject it is possible to create interfaces. An interface is just an API, it doesn't contain the implementation. A GObject class can implement one or several interfaces. If a GObject class is documented with GTK-Doc, the documentation will contain a section \emph{Implemented Interfaces}.
 
-For example GTK+ contains the \lstinline{GtkOrientable} interface that is implemented by many widgets and permits to set the orientation: horizontal or vertical.
+For example GTK contains the \lstinline{GtkOrientable} interface that is implemented by many widgets and permits to set the orientation: horizontal or vertical.
 
 The two macros explained in the previous section work for interfaces too. An example with \lstinline{GtkGrid}:
 \begin{lstlisting}
@@ -233,7 +233,7 @@ The \lstinline{g_signal_connect*()} functions actually return an ID of the signa
 
 Sometimes we also want to disconnect the signal handler simply because we are no longer interested by the event.
 
-The Listing~\ref{oop-gobject-disconnect-signal} shows a complete example of how to disconnect a signal handler when its \lstinline{user_data} argument is freed. We come back to an example with a spell checker, because the example with the GTK+ button doesn't fit well the situation\footnote{Most of the time a GTK+ widget doesn't live longer than the container it is added to, and the object listening to the widget signal is usually the container itself. So if the widget dies at the same time as the container, it is not possible for the widget to send a signal while its container has already been destroyed. In that case, there is thus no point in disconnecting the signal in the container destructor, since at that point the widget is already freed; and it's harder for a dead object to send a signal\footnotemark.}.
+The Listing~\ref{oop-gobject-disconnect-signal} shows a complete example of how to disconnect a signal handler when its \lstinline{user_data} argument is freed. We come back to an example with a spell checker, because the example with the GTK button doesn't fit well the situation\footnote{Most of the time a GTK widget doesn't live longer than the container it is added to, and the object listening to the widget signal is usually the container itself. So if the widget dies at the same time as the container, it is not possible for the widget to send a signal while its container has already been destroyed. In that case, there is thus no point in disconnecting the signal in the container destructor, since at that point the widget is already freed; and it's harder for a dead object to send a signal\footnotemark.}.
 % GObject is boring so a bit of humor doesn't hurt, a footnote inside a footnote, footception :-)
 \footnotetext{When I say that it is harder, it is actually impossible, of course.}
 
@@ -255,9 +255,9 @@ Note also that if \lstinline{MyTextView} was a GObject class, it would have been
 
 \subsection{Properties}
 
-If you have looked at the GTK+ or GIO API reference, you must have noticed that some GObject classes have one or more \emph{properties}. A property is like an instance variable, also called ``attribute'', but is different in the GObject context because it has additional interesting properties\footnote{Pun intended.}.
+If you have looked at the GTK or GIO API reference, you must have noticed that some GObject classes have one or more \emph{properties}. A property is like an instance variable, also called ``attribute'', but is different in the GObject context because it has additional interesting properties\footnote{Pun intended.}.
 
-As previously said at the beginning of section~\ref{oop-gobject-signals-and-properties} p.~\pageref{oop-gobject-signals-and-properties}, a good example of a property is the state of a check button, i.e. a boolean value describing whether the button is currently checked or not. If you already know a little GTK+, you might have found that a check button is available with the \lstinline{GtkCheckButton} widget. But there was a little trap if you wanted to find the property that I was talking about, because the property is implemented in the parent class \lstinline{GtkToggleButton}: the \lstinline{GtkToggleButton:active} property\footnote{In the same way as signals are documented with GTK-Doc as ``\lstinline{ClassName::signal-name}'', properties are documented as ``\lstinline{ClassName:property-name}''.}.
+As previously said at the beginning of section~\ref{oop-gobject-signals-and-properties} p.~\pageref{oop-gobject-signals-and-properties}, a good example of a property is the state of a check button, i.e. a boolean value describing whether the button is currently checked or not. If you already know a little GTK, you might have found that a check button is available with the \lstinline{GtkCheckButton} widget. But there was a little trap if you wanted to find the property that I was talking about, because the property is implemented in the parent class \lstinline{GtkToggleButton}: the \lstinline{GtkToggleButton:active} property\footnote{In the same way as signals are documented with GTK-Doc as ``\lstinline{ClassName::signal-name}'', properties are documented as ``\lstinline{ClassName:property-name}''.}.
 
 \subsubsection{The \lstinline{"notify"} Signal}
 
@@ -265,7 +265,7 @@ The main attribute\footnote{Pun also intended.} of a property ---~besides repres
 
 There is one concept of GObject signals that is not yet explained and is used with the \lstinline{GObject::notify} signal: when emitting a signal, a \emph{detail} can be provided. In the case of the notify signal, the detail is the name of the property whose value has changed. Since there is only one signal for all properties, thanks to the \emph{detail} it is possible to connect a callback to be notified only when a certain property has changed. If the \emph{detail} is not provided when connecting the callback, the callback would be called when \emph{any} of the object properties change, which is generally not what is wanted.
 
-It will be clearer with an example. The Listing~\ref{oop-gobject-connect-to-notify} p.~\pageref{oop-gobject-connect-to-notify} shows how to connect to the notify signal. Note that instead of connecting to the \lstinline{"notify::active"} detailed signal, it is actually more convenient to use the \lstinline{GtkToggleButton::toggled} signal. There are better real-world use-cases where it is needed to connect to the notify signal, but at least the Listing~\ref{oop-gobject-connect-to-notify} is hopefully understandable with only limited GTK+ knowledge (and if you look at the documentation in Devhelp in parallel).
+It will be clearer with an example. The Listing~\ref{oop-gobject-connect-to-notify} p.~\pageref{oop-gobject-connect-to-notify} shows how to connect to the notify signal. Note that instead of connecting to the \lstinline{"notify::active"} detailed signal, it is actually more convenient to use the \lstinline{GtkToggleButton::toggled} signal. There are better real-world use-cases where it is needed to connect to the notify signal, but at least the Listing~\ref{oop-gobject-connect-to-notify} is hopefully understandable with only limited GTK knowledge (and if you look at the documentation in Devhelp in parallel).
 
 \begin{lstlisting}[float, caption={Connecting to the notify signal to listen to property changes.}, label=oop-gobject-connect-to-notify]
 /* If you look at the notify signal documentation, the first parameter
