@@ -2,7 +2,7 @@
 
 \chapter{GLib, the Core Library}
 
-GLib is the low-level core library that forms the basis for projects such as GTK+ and GNOME. It provides data structures, utility functions, portability wrappers, and other essential functionality such as an event loop and threads. GLib is available on most Unix-like systems and Windows.
+GLib is the low-level core library that forms the basis for projects such as GTK and GNOME. It provides data structures, utility functions, portability wrappers, and other essential functionality such as an event loop and threads. GLib is available on most Unix-like systems and Windows.
 
 This chapter covers some of the most commonly-used features. GLib is simple, and the concepts are familiar; so we'll move quickly. For more complete coverage of GLib, see the latest API documentation that comes with the library (for the development environment, see section~\ref{intro-dev-environment} on p.~\pageref{intro-dev-environment}). By the way: if you have very specific questions about the implementation, don't be afraid to look at the source code. Normally the documentation contains enough information, but if you come across a missing detail, please file a bug (of course, the best would be with a provided patch).
 
@@ -82,7 +82,7 @@ Be careful, though; these macros allow you to store an integer in a pointer, but
 \subsection{Debugging Macros}
 \label{glib-debugging-macros}
 
-GLib has a nice set of macros you can use to enforce invariants and preconditions in your code. GTK+ uses these liberally -- one of the reasons it's so stable and easy to use. They all disappear when you define \lstinline{G_DISABLE_CHECKS} or \lstinline{G_DISABLE_ASSERT}, so there's no performance penalty in production code. Using these liberally is a very, very good idea. You'll find bugs much faster if you do. You can even add assertions and checks whenever you find a bug to be sure the bug doesn't reappear in future versions -- this complements a regression suite. Checks are especially useful when the code you're writing will be used as a black box by other programmers; users will immediately know when and how they've misused your code.
+GLib has a nice set of macros you can use to enforce invariants and preconditions in your code. GTK uses these liberally -- one of the reasons it's so stable and easy to use. They all disappear when you define \lstinline{G_DISABLE_CHECKS} or \lstinline{G_DISABLE_ASSERT}, so there's no performance penalty in production code. Using these liberally is a very, very good idea. You'll find bugs much faster if you do. You can even add assertions and checks whenever you find a bug to be sure the bug doesn't reappear in future versions -- this complements a regression suite. Checks are especially useful when the code you're writing will be used as a black box by other programmers; users will immediately know when and how they've misused your code.
 
 Of course you should be very careful to ensure your code isn't subtly dependent on debug-only statements to function correctly. Statements that will disappear in production code should \emph{never} have side effects.
 
@@ -484,7 +484,7 @@ copy_with_append (GSList      *list_of_strings,
 }
 \end{lstlisting}
 
-GLib and GTK+ use the ``function pointer and user data'' idiom heavily. If you have functional programming experience, this  is much like using lambda expressions to create a \emph{closure}. (A closure combines a function with an \emph{environment} -- a set of name-value bindings. In this case the ``environment'' is the user data you pass to \lstinline{append_foreach()}, and the ``closure'' is the combination of the function pointer and the user data.)
+GLib and GTK use the ``function pointer and user data'' idiom heavily. If you have functional programming experience, this  is much like using lambda expressions to create a \emph{closure}. (A closure combines a function with an \emph{environment} -- a set of name-value bindings. In this case the ``environment'' is the user data you pass to \lstinline{append_foreach()}, and the ``closure'' is the combination of the function pointer and the user data.)
 
 \begin{lstlisting}[float, caption={Manipulating a linked list}, label=glib-listmanip]
 #include <glib.h>
@@ -802,7 +802,7 @@ main (gint   argc,
 }
 \end{lstlisting}
 
-The GTK+ event loop is slightly higher level than the GLib event loop abstraction. \lstinline{gtk_main()} runs the main event loop until \lstinline{gtk_main_quit()} is called. \lstinline{gtk_main_quit()} is typically called in the function callback when the close button is clicked or the Quit menu action is activated.
+The GTK event loop is slightly higher level than the GLib event loop abstraction. \lstinline{gtk_main()} runs the main event loop until \lstinline{gtk_main_quit()} is called. \lstinline{gtk_main_quit()} is typically called in the function callback when the close button is clicked or the Quit menu action is activated.
 
 A callback is a function that is called when a signal is sent. The signal system is implemented by the GObject library. Listening to a signal is achieved with the \lstinline{g_signal_connect()} function:
 \begin{lstlisting}
