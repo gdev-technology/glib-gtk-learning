@@ -9,7 +9,7 @@ Another important idea of OOP is to \emph{hide all data within its class}. In C,
 
 \section{Header Example}
 
-The Listing~\ref{oop-semi-spell-checker-h} p.~\pageref{oop-semi-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK+ application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
+The Listing~\ref{oop-semi-spell-checker-h} p.~\pageref{oop-semi-spell-checker-h} shows an example of a header providing a simple spell checker. This is a fictitious code; if you need a spell checker in your GTK application you would nowadays probably use the gspell library\footnote{\url{https://wiki.gnome.org/Projects/gspell}}.
 
 \lstinputlisting[float, caption={myapp-spell-checker.h}, label=oop-semi-spell-checker-h]{code/myapp-spell-checker.h}
 
@@ -48,7 +48,7 @@ The \lstinline{G_BEGIN_DECLS}/\lstinline{G_END_DECLS} pair permits the header to
 
 \subsection{\#include}
 \label{oop-semi-include-in-header}
-There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK+ is that including a header in a *.c file should not require including another header beforehand\footnote{That's the general rule of thumb, but exceptions exist: for example including \lstinline{glib/gi18n-lib.h} requires that \lstinline{GETTEXT_PACKAGE} is defined, the latter being usually present in the \lstinline{config.h} header.}.
+There are several ways to organize the \lstinline{#include}'s in a C codebase. The convention in GLib/GTK is that including a header in a *.c file should not require including another header beforehand\footnote{That's the general rule of thumb, but exceptions exist: for example including \lstinline{glib/gi18n-lib.h} requires that \lstinline{GETTEXT_PACKAGE} is defined, the latter being usually present in the \lstinline{config.h} header.}.
 
 \path{myapp-spell-checker.h} contains the following \lstinline{#include}:
 \begin{lstlisting}
@@ -200,8 +200,8 @@ As a result, to find the full declaration of the \lstinline{MyappSpellChecker} t
 $ git grep -n _MyappSpellChecker
 \end{lstlisting}
 
-In GLib/GTK+, this underscore-prefix convention is normally applied to every \lstinline{struct} that has a separate \lstinline{typedef} line. The convention is not thoroughly followed when a \lstinline{struct} is used in only one *.c file. And the convention is usually not followed for \lstinline{enum} types. However, for your project, nothing prevents you from applying consistently the underscore-prefix convention to all types.
+In GLib/GTK, this underscore-prefix convention is normally applied to every \lstinline{struct} that has a separate \lstinline{typedef} line. The convention is not thoroughly followed when a \lstinline{struct} is used in only one *.c file. And the convention is usually not followed for \lstinline{enum} types. However, for your project, nothing prevents you from applying consistently the underscore-prefix convention to all types.
 
 Note that there exists more sophisticated tools than \shellcmd{grep} to browse a C codebase, for example Cscope\footnote{http://cscope.sourceforge.net/}.
 
-To learn more about the coding style used in GLib, GTK+ and GNOME, read the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
+To learn more about the coding style used in GLib, GTK and GNOME, read the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
