@@ -1,18 +1,18 @@
-\part{GTK+}
-\chapter{Example of a GTK+ Application Code Architecture}
+\part{GTK}
+\chapter{Example of a GTK Application Code Architecture}
 \label{gtk-app-arch}
 
-\emph{This chapter is not entirely finished, it might be hard to understand without any knowledge about GTK+ or another widget toolkit. And the chapter is not well integrated with the other chapters, the introduction and further reading chapters have not been adapted for example. This chapter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.}
+\emph{This chapter is not entirely finished, it might be hard to understand without any knowledge about GTK or another widget toolkit. And the chapter is not well integrated with the other chapters, the introduction and further reading chapters have not been adapted for example. This chapter is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.}
 
 %FIXME: re-explain what is a "widget" and "container". And add a glossary at the end.
 
-For any programming project, it is important to design correctly the general code architecture. With Object-Oriented Programming, it means defining the main classes. This chapter explains one good example of a code architecture for a GTK+ application, by looking at a simplified view of the gedit text editor\footnote{\url{https://wiki.gnome.org/Apps/Gedit}}.
+For any programming project, it is important to design correctly the general code architecture. With Object-Oriented Programming, it means defining the main classes. This chapter explains one good example of a code architecture for a GTK application, by looking at a simplified view of the gedit text editor\footnote{\url{https://wiki.gnome.org/Apps/Gedit}}.
 
 gedit has a tabbed document interface: several files can be opened in the same gedit window, in different tabs. As we will see, this is reflected in the code architecture.
 
-The Figure~\ref{fig:gedit-architecture} p.~\pageref{fig:gedit-architecture} shows the class schema. Every gedit class in the schema is a subclass of a GTK+ or GtkSourceView class. (GtkSourceView\footnote{\url{https://wiki.gnome.org/Projects/GtkSourceView}} is a library extending the \lstinline{GtkTextView} widget; \lstinline{GtkTextView} being part of GTK+.)
+The Figure~\ref{fig:gedit-architecture} p.~\pageref{fig:gedit-architecture} shows the class schema. Every gedit class in the schema is a subclass of a GTK or GtkSourceView class. (GtkSourceView\footnote{\url{https://wiki.gnome.org/Projects/GtkSourceView}} is a library extending the \lstinline{GtkTextView} widget; \lstinline{GtkTextView} being part of GTK.)
 
-We will go through the class schema, explaining the classes step by step, by beginning at the top. This will permit to introduce some of the most important GTK+ classes, not by describing them in details with a lot of code examples, but by giving a high-level overview.
+We will go through the class schema, explaining the classes step by step, by beginning at the top. This will permit to introduce some of the most important GTK classes, not by describing them in details with a lot of code examples, but by giving a high-level overview.
 
 \begin{figure}
   \begin{center}
@@ -24,7 +24,7 @@ We will go through the class schema, explaining the classes step by step, by beg
 
 \section{The main() function and GeditApp}
 
-Although not represented on the schema, the entry point of a GTK+ application --~as for every C program~-- is the \lstinline{main()} function. To create a GTK+ application, the principal thing to do in \lstinline{main()} is to create a \lstinline{GtkApplication} instance, or a subclass of it. In the schema we see that \lstinline{GeditApp} is a subclass of \lstinline{GtkApplication}, so the \lstinline{main()} function of gedit creates a \lstinline{GeditApp} object.
+Although not represented on the schema, the entry point of a GTK application --~as for every C program~-- is the \lstinline{main()} function. To create a GTK application, the principal thing to do in \lstinline{main()} is to create a \lstinline{GtkApplication} instance, or a subclass of it. In the schema we see that \lstinline{GeditApp} is a subclass of \lstinline{GtkApplication}, so the \lstinline{main()} function of gedit creates a \lstinline{GeditApp} object.
 
 \lstinline{GtkApplication} is the class that contains and represents the whole application. There is usually only one instance of \lstinline{GtkApplication} per process, so it can be considered a singleton class. What \lstinline{GtkApplication} contains are the \emph{windows}, for example the \lstinline{GeditWindow}'s in case of gedit, plus other types of windows like dialog windows.
 
@@ -73,7 +73,7 @@ What \lstinline{GeditApp} does is basically what would need to be done in \lstin
   \item Implementing application-wide \lstinline{GAction}'s. \lstinline{GAction} is a class part of GIO that represents an action that the user can trigger. An application-wide action is for example to quit the application, or to open the preferences dialog (because the preferences are applied to the whole application).
 \end{itemize}
 
-When you start writing a new GTK+ application, you don't see directly the need for a \lstinline{GtkApplication} subclass, since the code in \lstinline{main()}, plus the callbacks, are still small. But when more and more features are added, it is a good idea at some point to move the code to a \lstinline{GtkApplication} subclass. Or to create a subclass directly. A subclass is especially useful when the need arises to store additional data.
+When you start writing a new GTK application, you don't see directly the need for a \lstinline{GtkApplication} subclass, since the code in \lstinline{main()}, plus the callbacks, are still small. But when more and more features are added, it is a good idea at some point to move the code to a \lstinline{GtkApplication} subclass. Or to create a subclass directly. A subclass is especially useful when the need arises to store additional data.
 
 \section{GeditWindow}
 
@@ -95,17 +95,17 @@ Besides the headerbar, \lstinline{GeditWindow} creates a \lstinline{GeditStatusb
 
 In the class schema, we can see that the content of a tab is a \lstinline{GeditTab} widget, a subclass of \lstinline{GtkGrid}. The main element inside a \lstinline{GeditTab} is the \lstinline{GeditView}. More precisely --- it was omitted in the schema for succinctness --- the \lstinline{GeditView} is actually contained in a \lstinline{GtkScrolledWindow} which is contained in the \lstinline{GeditTab}. But \lstinline{GeditTab} can contain other widgets, for example information bars on top of the document.
 
-\lstinline{GeditView} is a subclass of \lstinline{GtkSourceView}, which is itself a subclass of \lstinline{GtkTextView}. \lstinline{GtkTextView} --- which is part of GTK+ --- is the foundation for a multiline text editor. The GtkSourceView library adds features useful for source code, such as syntax highlighting. \lstinline{GtkTextView} follows a Model-View-Controller pattern. \lstinline{GtkTextBuffer} is the model, i.e. it contains the data.
+\lstinline{GeditView} is a subclass of \lstinline{GtkSourceView}, which is itself a subclass of \lstinline{GtkTextView}. \lstinline{GtkTextView} --- which is part of GTK --- is the foundation for a multiline text editor. The GtkSourceView library adds features useful for source code, such as syntax highlighting. \lstinline{GtkTextView} follows a Model-View-Controller pattern. \lstinline{GtkTextBuffer} is the model, i.e. it contains the data.
 
-\section{Why and When Creating Sub-Classes of GTK+ Widgets?}
+\section{Why and When Creating Sub-Classes of GTK Widgets?}
 
 If we look for instance at \lstinline{GeditTab}, it contains --- by composition --- a \lstinline{GeditView}. \lstinline{GeditView} is a subclass of \lstinline{GtkSourceView}. Instead, \lstinline{GeditTab} could use by composition directly a \lstinline{GtkSourceView} object, and move the code of \lstinline{GeditView} to \lstinline{GeditTab}. But usually, it's exactly the opposite that happens or should happen.
 
-When a GTK+ application codebase is still small, for example if you start writing an equivalent of \lstinline{GeditTab}, you can create a \lstinline{GtkSourceView} object directly in \lstinline{GeditTab}, and store the \lstinline{GtkSourceView} object in an instance variable. Then, when implementing new features, you add new functions that use almost exclusively the \lstinline{GtkSourceView} instance variable. You may even have \lstinline{static} functions that take directly a \lstinline{GtkSourceView} argument instead of the \lstinline{GeditTab} \emph{self} parameter. You may also store additional data useful only to the \lstinline{GtkSourceView}-related functions. If the \lstinline{GeditTab} class is still small (e.g. 500 lines of code) and doesn't contain a lot of instance variables, there is no problem. On the other hand, if the \lstinline{GeditTab} class becomes larger (e.g. more than 2000 lines of code), then it's probably a sign that the class should delegate some of its work to a new class; in our case, \lstinline{GeditView}. Note that 2000 lines of code for a class might be fine, there is no clear boundary on when a class should be split. But if the resulting \lstinline{GeditView} class would contain at least several hundreds of non-boilerplate code, it is probably a good idea to do the refactoring.
+When a GTK application codebase is still small, for example if you start writing an equivalent of \lstinline{GeditTab}, you can create a \lstinline{GtkSourceView} object directly in \lstinline{GeditTab}, and store the \lstinline{GtkSourceView} object in an instance variable. Then, when implementing new features, you add new functions that use almost exclusively the \lstinline{GtkSourceView} instance variable. You may even have \lstinline{static} functions that take directly a \lstinline{GtkSourceView} argument instead of the \lstinline{GeditTab} \emph{self} parameter. You may also store additional data useful only to the \lstinline{GtkSourceView}-related functions. If the \lstinline{GeditTab} class is still small (e.g. 500 lines of code) and doesn't contain a lot of instance variables, there is no problem. On the other hand, if the \lstinline{GeditTab} class becomes larger (e.g. more than 2000 lines of code), then it's probably a sign that the class should delegate some of its work to a new class; in our case, \lstinline{GeditView}. Note that 2000 lines of code for a class might be fine, there is no clear boundary on when a class should be split. But if the resulting \lstinline{GeditView} class would contain at least several hundreds of non-boilerplate code, it is probably a good idea to do the refactoring.
 
 What OOP is all about is to pack data and behavior together, and delegate some of the work to other classes. Class inheritance makes sense when we want to add more behavior to an existing class, with possible additional data related to the added behavior. \lstinline{GeditView} is a subclass of \lstinline{GtkSourceView} because \lstinline{GeditView} \emph{is~a} \lstinline{GtkSourceView}; that is, \lstinline{GeditView} operates on the same base data as \lstinline{GtkSourceView}. In addition, it permits to \lstinline{GeditTab} to delegate some of its work, with the goal to have smaller, more manageable classes. Smaller in two ways: less code, and less instance variables.
 
-So, during the lifetime of a GTK+ application, the programmer often needs to refactor the code, creating new classes, delegating more work. The opposite can happen when application code is moved to the underlying library; for example, if all the features of \lstinline{GeditView} are added to the \lstinline{GtkSourceView} class; in that case, the \lstinline{GeditView} subclass doesn't make sense anymore.
+So, during the lifetime of a GTK application, the programmer often needs to refactor the code, creating new classes, delegating more work. The opposite can happen when application code is moved to the underlying library; for example, if all the features of \lstinline{GeditView} are added to the \lstinline{GtkSourceView} class; in that case, the \lstinline{GeditView} subclass doesn't make sense anymore.
 
 \section{Composite Widgets}
 
