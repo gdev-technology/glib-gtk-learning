@@ -1,6 +1,6 @@
 \chapter{Introduction}
 
-This text is a guide to get started with the GLib/GTK+ development platform, with the C language. It is sometimes assumed that the reader uses a Unix-like system.
+This text is a guide to get started with the GLib/GTK development platform, with the C language. It is sometimes assumed that the reader uses a Unix-like system.
 
 Warning: this ``book'' is far from finished, you're reading the version~\bookversion. If you have any comments, don't hesitate to contact me at \url{swilmet@gnome.org}, thanks!
 
@@ -43,7 +43,7 @@ Thanks!
   \item Talk about the Rust programming language.
 \end{itemize}
 
-\section{What is GLib and GTK+?}
+\section{What is GLib and GTK?}
 
 Roughly speaking, GLib is a set of libraries: GLib core, GObject and GIO. Those three libraries are developed in the same Git repository called \emph{glib}, so when referring to ``GLib'', it can either mean ``GLib core'' or the broader set including also GObject and GIO.
 
@@ -55,31 +55,31 @@ GIO -- which depends on GLib core and GObject -- provides high-level APIs for in
 
 The GLib libraries can be used to write operating system services, libraries, command line utilities and such. GLib offers higher-level APIs than the POSIX standard; it is therefore more comfortable to write a C program with GLib.
 
-GTK+ is a widget toolkit based on GLib that can be used to develop applications with a graphical user interface (GUI). A ``widget'' is a GUI element, for example a button, some text, a menu, etc. And there are some special kinds of widgets that are called ``containers'', which can contain other widgets, to assemble the elements in a window. GTK+ provides a broad range of widgets and containers.
+GTK is a widget toolkit based on GLib that can be used to develop applications with a graphical user interface (GUI). A ``widget'' is a GUI element, for example a button, some text, a menu, etc. And there are some special kinds of widgets that are called ``containers'', which can contain other widgets, to assemble the elements in a window. GTK provides a broad range of widgets and containers.
 
-The first version of GTK+, or the GIMP Tool Kit\footnote{The name ``The GIMP Tool Kit'' is now rarely used, today it is more commonly known as GTK+ for short.}, was mainly written by Peter~Mattis in 1996 for the GIMP (GNU Image Manipulation Program), but has quickly become a general-purpose library. The ``+'' has been added later to distinguish between the original version and a new version that added object oriented features. GLib started as part of GTK+, but is now a standalone library.
+The first version of GTK, or the GIMP Tool Kit\footnote{The name ``The GIMP Tool Kit'' is now rarely used, today it is more commonly known as GTK for short.}, was mainly written by Peter~Mattis in 1996 for the GIMP (GNU Image Manipulation Program), but has quickly become a general-purpose library. The ``+'' has been added later to distinguish between the original version and a new version that added object oriented features. GLib started as part of GTK, but is now a standalone library.
 
-The GLib and GTK+ APIs are documented with GTK-Doc. Special comments are written in the source code, and GTK-Doc extracts those comments to generate HTML pages.
+The GLib and GTK APIs are documented with GTK-Doc. Special comments are written in the source code, and GTK-Doc extracts those comments to generate HTML pages.
 
-Although GLib and GTK+ are written in C, language bindings are available for JavaScript, Python, Perl and many other programming languages. At the beginning, manual bindings were created, which needed to be updated each time the API of the library changed. Nowadays the language bindings are generic and are thus automatically updated when, for example, new functions are added. This is thanks to GObject Introspection. Special annotations are added to the GTK-Doc comments, to expose more information than what the C syntax can provide, for example about ownership transfer of dynamically-allocated content\footnote{For example, whether you need to free the return value.}. Any C library with GObject Introspection support is thus available from many programming languages. In addition, the annotations are also useful to the C programmer because it's a good and succint way to document certain recurrent API aspects.
+Although GLib and GTK are written in C, language bindings are available for JavaScript, Python, Perl and many other programming languages. At the beginning, manual bindings were created, which needed to be updated each time the API of the library changed. Nowadays the language bindings are generic and are thus automatically updated when, for example, new functions are added. This is thanks to GObject Introspection. Special annotations are added to the GTK-Doc comments, to expose more information than what the C syntax can provide, for example about ownership transfer of dynamically-allocated content\footnote{For example, whether you need to free the return value.}. Any C library with GObject Introspection support is thus available from many programming languages. In addition, the annotations are also useful to the C programmer because it's a good and succint way to document certain recurrent API aspects.
 
-GLib and GTK+ are part of the GNU Project, whose overall goal is developing a free operating system (named GNU) plus applications to go with it. GNU stands for ``GNU's Not Unix'', a humorous way of saying that the GNU operating system is Unix-compatible. You can learn more about GNU at \url{https://www.gnu.org}.
+GLib and GTK are part of the GNU Project, whose overall goal is developing a free operating system (named GNU) plus applications to go with it. GNU stands for ``GNU's Not Unix'', a humorous way of saying that the GNU operating system is Unix-compatible. You can learn more about GNU at \url{https://www.gnu.org}.
 
-The GLib/GTK+ web site is: \url{http://www.gtk.org}
+The GLib/GTK web site is: \url{http://www.gtk.org}
 
 \section{The GNOME Desktop}
 
-An important project for GLib and GTK+ is GNOME. GNOME, which is also part of GNU, is a free/libre desktop environment started in 1997 by Miguel~de~Icaza and Federico~Mena-Quintero. GNOME makes extensive use of GTK+, and the latter is now developed primarily by GNOME developers.
+An important project for GLib and GTK is GNOME. GNOME, which is also part of GNU, is a free/libre desktop environment started in 1997 by Miguel~de~Icaza and Federico~Mena-Quintero. GNOME makes extensive use of GTK, and the latter is now developed primarily by GNOME developers.
 
-``GNOME'' is actually an acronym: GNU Network Object Model Environment\footnote{As for GTK+, the complete name of GNOME is rarely used and doesn't reflect today's reality.}. Originally, the project was intended to create a framework for application objects, similar to Microsoft's OLE and COM technologies. However, the scope of the project rapidly expanded; it became clear that substantial groundwork was required before the ``network object'' part of the name could become reality. Old versions of GNOME included an object embedding architecture called Bonobo, and GNOME~1.0 included a fast, light CORBA ORB called ORBit. Bonobo has been replaced by D-Bus, an inter-process communication system.
+``GNOME'' is actually an acronym: GNU Network Object Model Environment\footnote{As for GTK, the complete name of GNOME is rarely used and doesn't reflect today's reality.}. Originally, the project was intended to create a framework for application objects, similar to Microsoft's OLE and COM technologies. However, the scope of the project rapidly expanded; it became clear that substantial groundwork was required before the ``network object'' part of the name could become reality. Old versions of GNOME included an object embedding architecture called Bonobo, and GNOME~1.0 included a fast, light CORBA ORB called ORBit. Bonobo has been replaced by D-Bus, an inter-process communication system.
 
-GNOME has two important faces. From the user's perspective, it is an integrated desktop environment and application suite. From the programmer's perspective, it is an application development framework (made up of numerous useful libraries that are based on GLib and GTK+). Applications written with the GNOME libraries run fine even if the user isn't running the desktop environment, but they integrate nicely with the GNOME desktop if it's available.
+GNOME has two important faces. From the user's perspective, it is an integrated desktop environment and application suite. From the programmer's perspective, it is an application development framework (made up of numerous useful libraries that are based on GLib and GTK). Applications written with the GNOME libraries run fine even if the user isn't running the desktop environment, but they integrate nicely with the GNOME desktop if it's available.
 
 The desktop environment includes a ``shell'' for task switching and launching programs, a ``control center'' for configuration, lots of applications such as a file manager, a web browser, a movie player, etc. These programs hide the traditional Unix command line behind an easy-to-use graphical interface.
 
-GNOME's development framework makes it possible to write consistent, easy-to-use, interoperable applications. The designers of windowing systems such as X11 or Wayland made a deliberate decision not to impose any user interface policy on developers; GNOME adds a ``policy layer,'' creating a consistent look-and-feel. Finished GNOME applications work well with the GNOME desktop, but can also be used ``standalone'' -- users only need to install GNOME's shared libraries. A GNOME application isn't tied to a specific windowing system, GTK+ provides backends for the X Window System, Wayland, Mac OS X, Windows, and even for a web browser.
+GNOME's development framework makes it possible to write consistent, easy-to-use, interoperable applications. The designers of windowing systems such as X11 or Wayland made a deliberate decision not to impose any user interface policy on developers; GNOME adds a ``policy layer,'' creating a consistent look-and-feel. Finished GNOME applications work well with the GNOME desktop, but can also be used ``standalone'' -- users only need to install GNOME's shared libraries. A GNOME application isn't tied to a specific windowing system, GTK provides backends for the X Window System, Wayland, Mac OS X, Windows, and even for a web browser.
 
-At the time of writing, there are new GLib, GTK+ and GNOME stable releases every six months, around March and September. A version number has the form ``\texttt{major.minor.micro}'', where ``\texttt{minor}'' is even for stable versions and is odd for unstable versions. For example, the 3.18.* versions are stable, but the 3.19.* versions are unstable. A new micro stable version (e.g. 3.18.0 $\rightarrow$ 3.18.1) doesn't add new features, only translation updates, bug fixes and performance improvements. GNOME components are meant to be installed with the same versions, alongside the version of GTK+ and GLib released at the same time; it's for instance a bad idea to run a GNOME daemon in version 3.18 with the control center in version 3.16. At the time of writing, the latest stable versions are: GLib~2.46, GTK+~3.18 and GNOME~3.18, all released at the same time in September 2015. For a library, a new major version number usually means there has been an API break, but thankfully previous major versions are parallel-installable with the new version. During a development cycle (e.g. 3.19), there is no API stability guarantees for \emph{new} features; but by being an early adopter your comments are useful to discover more quickly design flaws and bugs.
+At the time of writing, there are new GLib, GTK and GNOME stable releases every six months, around March and September. A version number has the form ``\texttt{major.minor.micro}'', where ``\texttt{minor}'' is even for stable versions and is odd for unstable versions. For example, the 3.18.* versions are stable, but the 3.19.* versions are unstable. A new micro stable version (e.g. 3.18.0 $\rightarrow$ 3.18.1) doesn't add new features, only translation updates, bug fixes and performance improvements. GNOME components are meant to be installed with the same versions, alongside the version of GTK and GLib released at the same time; it's for instance a bad idea to run a GNOME daemon in version 3.18 with the control center in version 3.16. At the time of writing, the latest stable versions are: GLib~2.46, GTK~3.18 and GNOME~3.18, all released at the same time in September 2015. For a library, a new major version number usually means there has been an API break, but thankfully previous major versions are parallel-installable with the new version. During a development cycle (e.g. 3.19), there is no API stability guarantees for \emph{new} features; but by being an early adopter your comments are useful to discover more quickly design flaws and bugs.
 
 More information about GNOME: \url{https://www.gnome.org/}
 
@@ -101,7 +101,7 @@ This book assumes that you already have some programming practice. Here is a lis
 
 \section{Why and When Using the C Language?}
 
-The GLib and GTK+ libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject. Official GNOME bindings are available for the following languages: C++, JavaScript, Perl, Python and Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}}. Vala is a new programming language based on GObject which integrates the peculiarities of GObject directly in its C\#-like syntax. Beyond the official GNOME bindings, GLib and GTK+ can be used in more than a dozen other programming languages, with a varying level of support. So why and when choosing the C language? For writing a daemon on a Unix system, C is the \emph{de facto} language. But it is less obvious for an application. To answer the question, let's first look at how to structure an application codebase.
+The GLib and GTK libraries can be used by other programming languages than C. Thanks to GObject Introspection, automatic bindings are available for a variety of languages for all libraries based on GObject. Official GNOME bindings are available for the following languages: C++, JavaScript, Perl, Python and Vala\footnote{\url{https://wiki.gnome.org/Projects/Vala}}. Vala is a new programming language based on GObject which integrates the peculiarities of GObject directly in its C\#-like syntax. Beyond the official GNOME bindings, GLib and GTK can be used in more than a dozen other programming languages, with a varying level of support. So why and when choosing the C language? For writing a daemon on a Unix system, C is the \emph{de facto} language. But it is less obvious for an application. To answer the question, let's first look at how to structure an application codebase.
 
 % Adapted from a FAQ question in GGAD.
 \subsection{Separate the Backend from the Frontend}
@@ -131,11 +131,11 @@ The C language has a very good \emph{toolchain}: stable compilers (GCC, Clang, �
 
 For some programs, a garbage collector is not appropriate because it pauses the program regularly to release unused memory. For critical code sections, such as real-time animations, it is not desirable to pause the program (a garbage collector can sometimes run during several seconds). In this case, manual memory management like in C is a solution.
 
-Less important, but still useful; the verbosity of C in combination with the GLib/GTK+ conventions has an advantage: the code can be searched easily with a command like \shellcmd{grep}. For example the function \lstinline{gtk_widget_show()} contains the namespace (\lstinline{gtk}), the class (\lstinline{widget}) and the method (\lstinline{show}). With an object-oriented language, the syntax is generally \lstinline[language=C++]{object.show()}. If ``show'' is searched in the code, there will most probably be more false positives, so a smarter tool is needed. Another advantage is that knowing the namespace and the class of a method can be useful when reading the code, it is another form of self-documentation.
+Less important, but still useful; the verbosity of C in combination with the GLib/GTK conventions has an advantage: the code can be searched easily with a command like \shellcmd{grep}. For example the function \lstinline{gtk_widget_show()} contains the namespace (\lstinline{gtk}), the class (\lstinline{widget}) and the method (\lstinline{show}). With an object-oriented language, the syntax is generally \lstinline[language=C++]{object.show()}. If ``show'' is searched in the code, there will most probably be more false positives, so a smarter tool is needed. Another advantage is that knowing the namespace and the class of a method can be useful when reading the code, it is another form of self-documentation.
 
-More importantly, the GLib/GTK+ API documentation is primarily written for the C language. Reading the C documentation while programming in another language is not convenient. Some tools are currently in development to generate the API documentation for other target languages, so hopefully in the future it won't be a problem anymore.
+More importantly, the GLib/GTK API documentation is primarily written for the C language. Reading the C documentation while programming in another language is not convenient. Some tools are currently in development to generate the API documentation for other target languages, so hopefully in the future it won't be a problem anymore.
 
-GLib/GTK+ are themselves written in C. So when programming in C, there is no extra layer. An extra layer is potentially a source of additional bugs and maintenance burdens. Moreover, using the C language is probably better for pedagogical purposes. A higher-level language can hide some details about GLib/GTK+. So the code is shorter, but when you have a problem you need to understand not only how the library feature works, but also how the language binding works.
+GLib/GTK are themselves written in C. So when programming in C, there is no extra layer. An extra layer is potentially a source of additional bugs and maintenance burdens. Moreover, using the C language is probably better for pedagogical purposes. A higher-level language can hide some details about GLib/GTK. So the code is shorter, but when you have a problem you need to understand not only how the library feature works, but also how the language binding works.
 
 That said, if (1) you're not comfortable in C, (2) you're already proficient with a higher-level language with GObject Introspection support, (3) you plan to write just a small application or plugin, then choosing the higher-level language makes perfect sense.
 
@@ -149,17 +149,17 @@ The logical learning path is:
 \begin{enumerate}
   \item The basics of GLib core;
   \item Object-Oriented Programming in C and the basics of GObject;
-  \item GTK+ and GIO in parallel.
+  \item GTK and GIO in parallel.
 \end{enumerate}
 
-Since GTK+ is based on GLib and GObject, it is better to understand the basics of those two libraries first. Some tutorials dive directly into GTK+, so after a short period of time you can display a window with some text and three buttons; it's fun, but knowing GLib and GObject is not a luxury if you want to understand what you're doing, and a realistic GTK+ application extensively uses the GLib libraries. GTK+ and GIO can be learned in parallel --- once you start using GTK+, you will see that some non-GUI parts are based on GIO.
+Since GTK is based on GLib and GObject, it is better to understand the basics of those two libraries first. Some tutorials dive directly into GTK, so after a short period of time you can display a window with some text and three buttons; it's fun, but knowing GLib and GObject is not a luxury if you want to understand what you're doing, and a realistic GTK application extensively uses the GLib libraries. GTK and GIO can be learned in parallel --- once you start using GTK, you will see that some non-GUI parts are based on GIO.
 
 So this book begins with the GLib core library (part~\ref{glib} p.~\pageref{glib}), then introduces Object-Oriented Programming in C (part~\ref{oop} p.~\pageref{oop}) followed by a Further Reading chapter (p.~\pageref{further-reading}).
 
 \section{The Development Environment}
 \label{intro-dev-environment}
 
-This section describes the development environment typically used when programming with GLib and GTK+ on a Unix system.
+This section describes the development environment typically used when programming with GLib and GTK on a Unix system.
 
 On a GNU/Linux distribution, a single package or group can often be installed to get a full C development environment, including, but not limited to:
 \begin{itemize}
@@ -170,16 +170,16 @@ On a GNU/Linux distribution, a single package or group can often be installed to
   \item the man-pages of: the Linux kernel and the glibc\footnote{Do not confuse the GNU C Library (glibc) with GLib. The former is lower-level.}.
 \end{itemize}
 
-For using GLib and GTK+ as a developer, there are several solutions:
+For using GLib and GTK as a developer, there are several solutions:
 \begin{itemize}
   \item The headers and the documentation can be installed with the package manager. The name of the packages end typically with one of the following suffixes: \texttt{-devel}, \texttt{-dev} or \texttt{-doc}. For example \texttt{glib2-devel} and \texttt{glib2-doc} on Fedora.
-  \item The latest versions of GLib and GTK+ can be installed with Jhbuild:\\
+  \item The latest versions of GLib and GTK can be installed with Jhbuild:\\
   \url{https://wiki.gnome.org/Projects/Jhbuild}
 \end{itemize}
 
-To read the API documentation of GLib and GTK+, Devhelp is a handy application, if you have installed the \texttt{-dev} or \texttt{-doc} package. For the text editor or IDE, there are many choices (and a source of many trolls): Vim, Emacs, gedit, Anjuta, MonoDevelop/Xamarin Studio, Geany, … A promising specialized IDE for GNOME is Builder, currently in development. For creating a GUI with GTK+, you can either write directly the code to do it, or you can use Glade to design the GUI graphically. Finally, GTK-Doc is used for writing API documentation and add the GObject Introspection annotations.
+To read the API documentation of GLib and GTK, Devhelp is a handy application, if you have installed the \texttt{-dev} or \texttt{-doc} package. For the text editor or IDE, there are many choices (and a source of many trolls): Vim, Emacs, gedit, Anjuta, MonoDevelop/Xamarin Studio, Geany, … A promising specialized IDE for GNOME is Builder, currently in development. For creating a GUI with GTK, you can either write directly the code to do it, or you can use Glade to design the GUI graphically. Finally, GTK-Doc is used for writing API documentation and add the GObject Introspection annotations.
 
-When using GLib or GTK+, pay attention to not use deprecated APIs for newly-written code. Be sure that you read the latest documentations. They are also available online at:\\
+When using GLib or GTK, pay attention to not use deprecated APIs for newly-written code. Be sure that you read the latest documentations. They are also available online at:\\
 \url{https://developer.gnome.org/}
 
 \section{Acknowledgments}
