@@ -2,10 +2,10 @@
 
 \chapter{Further Reading}
 
-At this point you should know the basics of GLib core and GObject. You don't need to know \emph{everything} about GLib core and GObject to continue, but having at least a basic understanding will allow you to more easily learn GTK+ and GIO, or any other GObject-based library for that matter.
+At this point you should know the basics of GLib core and GObject. You don't need to know \emph{everything} about GLib core and GObject to continue, but having at least a basic understanding will allow you to more easily learn GTK and GIO, or any other GObject-based library for that matter.
 
-\section{GTK+ and GIO}
-GTK+ and GIO can be learned in parallel.
+\section{GTK and GIO}
+GTK and GIO can be learned in parallel.
 
 You should be able to use any GObject class in GIO, just read the class description and skim through the list of functions to have an overview of what features a class provides. Among other interesting things, GIO includes:
 \begin{itemize}
@@ -17,27 +17,27 @@ You should be able to use any GObject class in GIO, just read the class descript
   \item Many other features, like I/O streams, network support or application support.
 \end{itemize}
 
-For building graphical applications with GTK+, don't panic, the reference documentation has a Getting Started guide, available with Devhelp or online at:\\
+For building graphical applications with GTK, don't panic, the reference documentation has a Getting Started guide, available with Devhelp or online at:\\
 \url{https://developer.gnome.org/gtk3/stable/}
 
 After reading the Getting Started guide, skim through the whole API reference to get familiar with the available widgets, containers and base classes. Some widgets have a quite large API, so a few external tutorials are also available, for example for \lstinline{GtkTextView} and \lstinline{GtkTreeView}. See the documentation page on:\\
 \url{http://www.gtk.org}
 
-There is also a series of small tutorials on various GLib/GTK+ topics:\\
+There is also a series of small tutorials on various GLib/GTK topics:\\
 \url{https://wiki.gnome.org/HowDoI}
 
 \section{Writing Your Own GObject Classes}
 
-The chapter~\ref{oop-gobject} explained how to \emph{use} an existing GObject class, which is very useful to learn GTK+, but it didn't explain how to \emph{create} your own GObject classes. Writing your own GObject classes permit to have reference counting, you can create your own properties and signals, you can implement interfaces, overriding virtual functions (if the virtual function is not associated to a signal), etc.
+The chapter~\ref{oop-gobject} explained how to \emph{use} an existing GObject class, which is very useful to learn GTK, but it didn't explain how to \emph{create} your own GObject classes. Writing your own GObject classes permit to have reference counting, you can create your own properties and signals, you can implement interfaces, overriding virtual functions (if the virtual function is not associated to a signal), etc.
 
 As was explained at the beginning of chapter~\ref{oop-gobject}, if you want to learn more in-depth information on GObject and to know how to create sub-classes, the GObject reference documentation contains introductory chapters: ``\emph{Concepts}'' and ``\emph{Tutorial}'', available as usual in Devhelp or online at:\\
 \url{https://developer.gnome.org/gobject/stable/}
 
 \section{Build System}
 
-A basic Makefile is generally not sufficient if you want to install your application on different systems. So a more sophisticated solution is needed. For a program based on GLib/GTK+, there are two main alternatives: the Autotools and Meson.
+A basic Makefile is generally not sufficient if you want to install your application on different systems. So a more sophisticated solution is needed. For a program based on GLib/GTK, there are two main alternatives: the Autotools and Meson.
 
-GNOME and GTK+ historically use the Autotools, but as of 2017 some modules (including GTK+) are migrating to Meson. For a new project, Meson can be recommended.
+GNOME and GTK historically use the Autotools, but as of 2017 some modules (including GTK) are migrating to Meson. For a new project, Meson can be recommended.
 
 \subsection{The Autotools}
 
@@ -56,7 +56,7 @@ Meson is a fairly new build system, is easier to learn than the Autotools, and a
 
 It is recommended to follow the GNOME Programming Guidelines~\cite{gnome-programming-guidelines}.
 
-The following list is a bit unrelated to GLib/GTK+ development, but is useful for any programming project. After having some practice, it is interesting to learn more about programming \emph{best}-practices. Writing code of good quality is important for preventing bugs and for maintaining a piece of software in the long-run.
+The following list is a bit unrelated to GLib/GTK development, but is useful for any programming project. After having some practice, it is interesting to learn more about programming \emph{best}-practices. Writing code of good quality is important for preventing bugs and for maintaining a piece of software in the long-run.
 
 \begin{itemize}
   \item \emph{The} book on programming best-practices is \emph{Code Complete}, by Steve~McConnell \cite{code-complete}. Highly recommended\footnote{Although the editor of \emph{Code Complete} is Microsoft Press, the book is not related to Microsoft or Windows. The author sometimes explains stuff related to open source, UNIX and Linux, but one can regret the total absence of the mention ``free/libre software'' and all the benefits of freedom, in particular for this kind of book: being able to learn by reading other's code. But if you are here, you hopefully already know all of this.}.
