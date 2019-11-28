@@ -1,0 +1,24 @@
+TODO
+====
+
+Book infrastructure
+-------------------
+
+- Smart ref with pageref if on different page: use the varioref package.
+- Index.
+- Glossary.
+- Conventions with more macros.
+
+Or rewrite the book in ConTeXt?!
+
+GTK app architecture
+--------------------
+
+- Adapt other chapters (intro, further reading, …).
+- Add a screenshot or a simplified mockup of gedit.
+- Add code examples?
+
+Misc
+----
+
+- Split GLib part into several chapters.
