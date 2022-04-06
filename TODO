@@ -25,3 +25,18 @@ Misc
 ----
 
 - Split GLib part into several chapters.
+
+About Rust
+----------
+
+- Some people recommend Rust for new projects.
+- But: lots of existing C/GObject code, and it's not feasible to rewrite
+  everything.
+- So: people still need to work and learn C/GObject.
+- And: even for a full rewrite, reading and understanding C/GObject code is
+  needed to avoid repeating history and past mistakes.
+
+Ideas of new chapters
+---------------------
+
+- How to write a library.
