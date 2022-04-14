@@ -11,4 +11,4 @@ $ cd src/
 $ latexmk -pdf main.tex
 ```
 
-[Website with a PDF download and links](https://people.gnome.org/~swilmet/glib-gtk-book/).
+[Website with a PDF download and links](https://informatique-libre.be/swilmet/glib-gtk-book/).
