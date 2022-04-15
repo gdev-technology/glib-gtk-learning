@@ -4,28 +4,6 @@ TODO
 See also the (more public) Todo list in the intro, plus TODO/FIXME comments in
 *.tex files.
 
-Book infrastructure
--------------------
-
-- Smart ref with pageref if on different page: use the varioref package.
-- Index.
-- Glossary.
-- Conventions with more macros.
-
-Or rewrite the book in ConTeXt?!
-
-GTK app architecture
---------------------
-
-- Adapt other chapters (intro, further reading, …).
-- Add a screenshot or a simplified mockup of gedit.
-- Add code examples?
-
-Misc
-----
-
-- Split GLib part into several chapters.
-
 About Rust
 ----------
 
@@ -36,7 +14,30 @@ About Rust
 - And: even for a full rewrite, reading and understanding C/GObject code is
   needed to avoid repeating history and past mistakes.
 
+GTK app architecture
+--------------------
+
+- Adapt other chapters (intro, further reading, …).
+- Add a screenshot or a simplified mockup of gedit.
+- Add code examples?
+- Adapt for GTK 4.
+
+Misc
+----
+
+- Split GLib part into several chapters.
+
 Ideas of new chapters
 ---------------------
 
 - How to write a library.
+
+Book infrastructure
+-------------------
+
+- Smart ref with pageref if on different page: use the varioref package.
+- Index.
+- Glossary.
+- Conventions with more macros.
+
+Or rewrite the book in ConTeXt?!
