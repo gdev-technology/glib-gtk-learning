@@ -4,16 +4,6 @@ TODO
 See also the (more public) Todo list in the intro, plus TODO/FIXME comments in
 *.tex files.
 
-About Rust
-----------
-
-- Some people recommend Rust for new projects.
-- But: lots of existing C/GObject code, and it's not feasible to rewrite
-  everything.
-- So: people still need to work and learn C/GObject.
-- And: even for a full rewrite, reading and understanding C/GObject code is
-  needed to avoid repeating history and past mistakes.
-
 GTK app architecture
 --------------------
 
@@ -21,16 +11,13 @@ GTK app architecture
 - Add a screenshot or a simplified mockup of gedit.
 - Add code examples?
 - Adapt for GTK 4.
+- In the meantime, maybe move it to an appendix.
 
 Misc
 ----
 
-- Split GLib part into several chapters.
-
-Ideas of new chapters
----------------------
-
-- How to write a library.
+- Split GLib part into several chapters (needs a quick re-read for page layout
+  fine tuning).
 
 Book infrastructure
 -------------------

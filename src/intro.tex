@@ -20,17 +20,22 @@ This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 Intern
 Some sections are based on the book \emph{GTK+/Gnome Application Development}, by Havoc Pennington, written in 1999, edited by the New Riders Publishing, and licensed under the Open Publication License. The latest version of the Open Publication License can be found at:\\
 \url{http://www.opencontent.org/openpub/}
 
-\section{Todo List for this Book and a Quick 2019 Update}
+\section{Todo List for this Book and a Quick 2019--2022 Update}
 
 \begin{itemize}
   \item Make chapter~\ref{gtk-app-arch} (about GTK) easier to understand and adapt the rest of the document to better integrate the chapter;
   \item GTK+ has been renamed to GTK, the plus sign has been dropped. Adapt the text accordingly;
-  \item No longer recommend Jhbuild, recommend instead Flatpak\footnote{\url{https://flatpak.org/}} and BuildStream\footnote{\url{https://buildstream.build/}};
+  \item Recommend Flatpak\footnote{\url{https://flatpak.org/}} and BuildStream\footnote{\url{https://buildstream.build/}}, recommend less Jhbuild, and there is also Toolbx\footnote{\url{https://containertoolbx.org/}};
   \item Talk about the freedesktop.org\footnote{\url{https://www.freedesktop.org/}} specifications;
-  \item The majority of active GNOME modules have been migrated to the Meson build system now (instead of the Autotools);
+  \item The majority of active GNOME modules have been migrated to the Meson build system now (instead of the Autotools). CMake is an alternative that allows better code re-use than Meson, but is less well supported for invoking GNOME tools;
   \item Write a chapter about developing C/GObject libraries;
-  \item Talk about the Rust programming language.
 \end{itemize}
+
+\subsection{About Rust}
+
+Some people recommend Rust for new projects.
+
+But there is a lot of existing C/GObject code, and it's not feasible to rewrite everything. So, some people still need to work and learn C/GObject. And, even for a full rewrite, reading and understanding C/GObject code is needed to avoid repeating history and past mistakes.
 
 \section{What is GLib and GTK?}
 
