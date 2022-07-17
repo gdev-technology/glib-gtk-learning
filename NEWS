@@ -1,3 +1,15 @@
+News in 0.9, 2022-07-17
+-----------------------
+* Adapt for GTK+ -> GTK rename (mostly done).
+* Update some links, new webpage:
+  https://informatique-libre.be/swilmet/glib-gtk-book/
+* Bibliography, recommend another book for:
+    - Unix
+    - Data Structures and Algorithms
+* Intro: more items in the "Todo List" section.
+* Intro: add subsection about Rust, why and when it makes sense to still use and
+  learn C/GObject.
+
 News in 0.8, 2019-03-29
 -----------------------
 * Include a draft of a new chapter: "Example of a GTK+ Application Code
