@@ -7,14 +7,23 @@
 \usepackage{parskip}
 \usepackage{pmboxdraw}
 
-% margins
+% Margins
 \usepackage[top=2cm, bottom=3cm, left=3.8cm, right=3.8cm]{geometry}
+
+% Custom commands
+\def\gDocumentMainTitle{The GLib/GTK Development Platform}
+\def\gDocumentSecondaryTitle{A Getting Started Guide}
+\def\gMainAuthorFirstName{Sébastien}
+\def\gMainAuthorLastName{Wilmet}
+\def\gBookVersion{0.9}
+
+\newcommand{\shellcmd}[1]{\texttt{#1}}
 
 % PDF file properties and links
 \usepackage{hyperref}
 \hypersetup{
-  pdfauthor = {Sébastien Wilmet},
-  pdftitle = {The GLib/GTK Development Platform},
+  pdfauthor = {\gMainAuthorFirstName{} \gMainAuthorLastName},
+  pdftitle = {\gDocumentMainTitle},
   pdfcreator = {TeX},
   pdfproducer = {TeX},
   %colorlinks = false,
@@ -46,15 +55,11 @@
 %\newcommand{\topfigrule}{\hrule\kern-0.4pt\relax}
 %\newcommand{\botfigrule}{\hrule\kern-0.4pt\relax}
 
-\newcommand{\shellcmd}[1]{\texttt{#1}}
+\title{\gDocumentMainTitle\\[0.3cm]
+{\normalsize \gDocumentSecondaryTitle}\\[0.3cm]
+{\normalsize Version \gBookVersion}}
 
-\newcommand{\bookversion}{0.9}
-
-\title{The GLib/GTK Development Platform\\[0.3cm]
-{\normalsize A Getting Started Guide}\\[0.3cm]
-{\normalsize Version \bookversion}}
-
-\author{Sébastien Wilmet}
+\author{\gMainAuthorFirstName{} \textsc{\gMainAuthorLastName}}
 
 \begin{document}
 
