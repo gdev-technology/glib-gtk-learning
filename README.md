@@ -1,10 +1,12 @@
 The GLib/GTK Development Platform - A Getting Started Guide
 ===========================================================
 
-A guide to get started with the GLib/GTK development platform with the C
-language, following a bottom-up approach. Most of the chapters are focused on
-best-practices for the code architecture and providing a high-level overview,
-giving references for further reading.
+This document is a guide to get started with the GLib/GTK development platform,
+with the C language. It follows a bottom-up approach: it starts with GLib and
+ends with GTK, because GTK is based on GLib. There is a focus on best-practices
+for the code architecture and providing a high-level overview, giving references
+for further reading. So this guide is not comprehensive, but tries to be easily
+comprehensible.
 
 Download the PDF
 ----------------
