@@ -1,13 +1,13 @@
 \chapter{Introduction}
 
-This document is a guide to get started with the GLib/GTK development platform, with the C language. It follows a bottom-up approach: it starts with GLib and ends with GTK, because GTK is based on GLib. There is a focus on best-practices for the code architecture and providing a high-level overview, giving references for further reading. So this guide is not comprehensive, but tries to be easily comprehensible.
+\emph{\gDocumentMainTitle} is a guide to get started with the GLib development platform, which permits to write C code more comfortably. There is a focus on best-practices for the code architecture and providing a high-level overview, giving references for further reading.
 
 The C language is supposed to be known, and it is sometimes assumed that the reader uses a Unix-like system.
 
 If you have any comments, don't hesitate to get in touch!
 
 The sources of this book are available at:\\
-\url{https://github.com/gdev-technology/glib-gtk-learning}
+\url{https://github.com/gdev-technology/glib-gtk-learning} % TODO: adapt, drop the 'gtk' part.
 
 \section{License}
 \label{intro-license}
@@ -28,17 +28,12 @@ We highly recommend to start new projects in Rust instead of C or C++. Rust is i
 
 But there is a lot of existing C/GLib code. Large projects cannot be rewritten overnight. So, some people still need to work with C and GLib.
 
-\section{Todo List for this Book and a Quick 2019--2024 Update}
+\section{Todo List for this Book and a Quick 2024 Update}
 
 \begin{itemize}
-  \item Add more content to chapter~\ref{gtk-app-arch} (about GTK) and adapt the rest of the document to better integrate the chapter;
-  \item GTK+ has been renamed to GTK, the plus sign has been dropped. There might still be a few places to adapt;
-  \item GTK~4 has been released;
-  \item Recommend Flatpak\footnote{\url{https://flatpak.org/}} and Toolbx\footnote{\url{https://containertoolbx.org/}}. Jhbuild is less recommended. And there is also BuildStream\footnote{\url{https://buildstream.build/}};
-  \item Talk about the freedesktop.org\footnote{\url{https://www.freedesktop.org/}} specifications;
+  \item Recommend Toolbx\footnote{\url{https://containertoolbx.org/}} and Flatpak\footnote{\url{https://flatpak.org/}}. JHBuild is less recommended. And there is also BuildStream\footnote{\url{https://buildstream.build/}};
   \item The majority of active GNOME modules have been migrated to the Meson build system now (instead of the Autotools). CMake is an alternative that allows better code re-use than Meson, but is less well supported for invoking GNOME tools;
-  \item Write a chapter about developing C/GObject libraries;
-  \item GNOME has adopted a new versioning scheme, going from GNOME~3.x.y to GNOME~40, 41, 42, etc, with alpha, beta and rc versions.
+  \item Write a chapter about developing C/GObject libraries.
 \end{itemize}
 
 \section{What is GLib and GTK?}
